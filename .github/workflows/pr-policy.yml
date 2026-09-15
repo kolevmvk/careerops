@@ -34,6 +34,9 @@ jobs:
           requireScope: false
           subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: The subject must start with a lowercase letter.
+          # Dependabot titles ("Bump x from a to b") are generated and consistent; the type prefix is still enforced by its config.
+          ignoreLabels: |
+            dependencies
 
   branch-policy:
     name: branch-policy
