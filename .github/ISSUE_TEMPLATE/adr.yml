@@ -1,0 +1,29 @@
+name: Architecture decision
+description: Propose or revisit a decision that is expensive to change later.
+title: "docs(adr): "
+labels: ["type:adr"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: The forces at play and why a decision is needed now.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed decision and consequences
+    validations:
+      required: true
+  - type: input
+    id: supersedes
+    attributes:
+      label: Supersedes ADR
+      placeholder: "ADR-0003 (optional)"

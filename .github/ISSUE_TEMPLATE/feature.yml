@@ -1,0 +1,33 @@
+name: Feature
+description: A deliverable from the specification or a new capability.
+title: "feat: "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What the user can do when this is done.
+    validations:
+      required: true
+  - type: input
+    id: spec
+    attributes:
+      label: Specification reference
+      placeholder: "docs/SPECIFICATION.md §6.2, docs/DOMAIN.md §4.5"
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [web, database, scoring, extraction, documents, ai, infra, ci, mobile]
+    validations:
+      required: true

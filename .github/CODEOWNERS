@@ -1,0 +1,7 @@
+# Default owner for everything in the repository.
+* @kolevmvk
+
+# Security-sensitive paths.
+/supabase/          @kolevmvk
+/infra/             @kolevmvk
+/.github/workflows/ @kolevmvk
