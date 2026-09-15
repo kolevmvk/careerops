@@ -11,6 +11,10 @@ updates:
     commit-message:
       prefix: build
       include: scope
+    ignore:
+      # Node types follow the runtime pinned in .nvmrc (Node 24); bump together with the runtime.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-tooling:
         dependency-type: development
