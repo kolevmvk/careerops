@@ -1,6 +1,7 @@
 # Private career data: never commit
+# (source documents live in private/source-docs; never add a "Docs/" folder:
+#  on case-insensitive filesystems it collides with the public docs/)
 private/
-Docs/
 *.pdf
 supabase/seed/private*.sql
 exports/
@@ -13,6 +14,7 @@ backups/
 
 # Dependencies and build output
 node_modules/
+.pnpm-store/
 .next/
 .turbo/
 dist/
