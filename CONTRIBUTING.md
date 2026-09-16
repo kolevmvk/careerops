@@ -57,6 +57,25 @@ macOS that is Docker Desktop; on Linux the daemon socket may need to be named
 explicitly (`DOCKER_HOST=unix:///var/run/docker.sock`) when Docker Desktop is
 also installed and holds the default context.
 
+## Working with a coding agent
+
+Most changes are written with Claude Code. Its configuration is committed and
+reviewed like the rest of the code, and the reasoning is in
+[ADR-0017](docs/adr/0017-coding-agent-inside-enforced-boundaries.md).
+
+| Path                    | Contents                                                             |
+| ----------------------- | -------------------------------------------------------------------- |
+| `CLAUDE.md`             | Index: where the truth lives, what loads when, boundaries            |
+| `.claude/rules/`        | Non-negotiables, loaded automatically by path                        |
+| `.claude/skills/`       | Procedures for one domain, loaded on demand                          |
+| `.claude/agents/`       | Subagents that differ in authority: auditor, QA, researcher          |
+| `.claude/hooks/`        | Guards that refuse destructive commands, tested by `pnpm test:agent` |
+| `.claude/settings.json` | Permission allowlist and denylist, hook registration                 |
+
+Personal settings go in `CLAUDE.local.md` and `.claude/settings.local.json`,
+which are git-ignored. A change to a guard ships with a test for the case it
+adds.
+
 ### Browser tooling (optional, per machine)
 
 Measuring the public pages - Core Web Vitals, layout at real breakpoints,

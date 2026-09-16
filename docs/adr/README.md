@@ -20,3 +20,4 @@ Decisions that are expensive to change later. Format: context, decision, consequ
 | [0014](0014-agent-facing-surface.md) | Agent-facing surface over public facts | Accepted |
 | [0015](0015-job-intake-lanes-and-email-ingestion-boundary.md) | Job intake lanes and the email ingestion boundary | Accepted |
 | [0016](0016-careerops-owns-one-schema-in-a-shared-database.md) | CareerOps owns one schema in a shared database | Accepted |
+| [0017](0017-coding-agent-inside-enforced-boundaries.md) | The coding agent works inside enforced boundaries | Accepted |
