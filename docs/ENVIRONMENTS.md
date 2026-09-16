@@ -26,5 +26,10 @@
 | Phase | What is created |
 |---|---|
 | 0–1 | Local stack only; GitHub environments `staging` and `production` defined without secrets |
-| 2 | Supabase staging and production projects, Vercel projects, deploy workflows |
-| 6 | Terraform takes ownership of Vercel, Supabase and AWS resources (`infra/terraform/envs/*`); backup bucket and GitHub OIDC role |
+| 2 | Supabase staging and production projects, Vercel projects, deploy workflows — created once `apps/web` exists, so nothing sits idle and pausing |
+| 8 | Terraform takes ownership of Vercel, Supabase and AWS resources (`infra/terraform/envs/*`); backup bucket and GitHub OIDC role |
+
+Until phase 8 there is no keep-alive job, so a free staging project pauses after
+about a week of inactivity. Unpausing is a click; it is a nuisance rather than a
+risk, and it is the reason the projects are created when there is something to
+deploy rather than in advance.
