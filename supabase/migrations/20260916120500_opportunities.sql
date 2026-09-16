@@ -1,6 +1,9 @@
 -- Opportunities: one pipeline for ads and outreach, with typed events.
 -- DOMAIN.md §4.8, invariant I3.
 
+-- All objects are created in the careerops schema (ADR-0016), never public.
+set search_path = careerops, public;
+
 create table opportunities (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users on delete cascade,

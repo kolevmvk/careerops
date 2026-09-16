@@ -1,6 +1,9 @@
 -- Market: target roles with their compensation floor, and the ad corpus.
 -- DOMAIN.md §4.5. Intake lanes are SPECIFICATION §7.
 
+-- All objects are created in the careerops schema (ADR-0016), never public.
+set search_path = careerops, public;
+
 create table target_roles (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users on delete cascade,

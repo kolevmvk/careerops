@@ -1,6 +1,9 @@
 -- Documents generated from verified facts, frozen when sent.
 -- DOMAIN.md §4.8, invariants I2 and I4. Guardrails are SPECIFICATION §8.
 
+-- All objects are created in the careerops schema (ADR-0016), never public.
+set search_path = careerops, public;
+
 create table documents (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users on delete cascade,

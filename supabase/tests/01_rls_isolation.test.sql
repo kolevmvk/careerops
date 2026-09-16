@@ -2,6 +2,8 @@
 -- DOMAIN.md §6 (I10 shape), SPECIFICATION §16 item 1.
 
 begin;
+
+set search_path = careerops, public, extensions;
 select plan(14);
 
 create extension if not exists pgtap with schema extensions;
@@ -30,17 +32,20 @@ values
 
 select ok(
   (select count(*) from pg_tables
-    where schemaname = 'public' and rowsecurity = false) = 0,
-  'every public table has row level security enabled'
+    where schemaname = 'careerops' and rowsecurity = false) = 0,
+  'every careerops table has row level security enabled'
 );
 
--- Anonymous callers.
+-- Anonymous callers. The careerops schema grants anon `usage` and nothing
+-- else (ADR-0016), so an unauthenticated caller is refused at the privilege
+-- layer and never reaches a row level security policy at all. That is stronger
+-- than returning an empty set, and it is what these assert.
 set local role anon;
-select is_empty('select 1 from employments', 'anon sees no employments');
-select is_empty('select 1 from jobs', 'anon sees no jobs');
-select is_empty('select 1 from projects', 'anon sees no projects');
-select is_empty('select 1 from documents', 'anon sees no documents');
-select is_empty('select 1 from opportunities', 'anon sees no opportunities');
+select throws_ok('select 1 from employments', '42501', null, 'anon cannot read employments');
+select throws_ok('select 1 from jobs', '42501', null, 'anon cannot read jobs');
+select throws_ok('select 1 from projects', '42501', null, 'anon cannot read projects');
+select throws_ok('select 1 from documents', '42501', null, 'anon cannot read documents');
+select throws_ok('select 1 from opportunities', '42501', null, 'anon cannot read opportunities');
 reset role;
 
 -- The owner.

@@ -59,12 +59,12 @@ jobs:
           unprotected=$(docker exec supabase_db_CareerOps \
             psql -U postgres -d postgres -Atc \
             "select coalesce(string_agg(tablename, ', '), '') from pg_tables
-              where schemaname = 'public' and not rowsecurity;")
+              where schemaname = 'careerops' and not rowsecurity;")
           if [ -n "$unprotected" ]; then
             echo "::error::tables without row level security: $unprotected"
             exit 1
           fi
-          echo "every public table has row level security enabled"
+          echo "every careerops table has row level security enabled"
 
       - name: Stop local stack
         if: always()

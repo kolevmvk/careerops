@@ -1,32 +1,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-  public: {
+  careerops: {
     Tables: {
       document_sources: {
         Row: {
@@ -96,10 +71,10 @@ export type Database = {
           created_at: string;
           document_id: string;
           frozen_at: string | null;
-          generator: Database["public"]["Enums"]["document_generator"];
+          generator: Database["careerops"]["Enums"]["document_generator"];
           id: string;
           rendered_md: string | null;
-          status: Database["public"]["Enums"]["document_status"];
+          status: Database["careerops"]["Enums"]["document_status"];
           updated_at: string | null;
           user_id: string;
           version: number;
@@ -109,10 +84,10 @@ export type Database = {
           created_at?: string;
           document_id: string;
           frozen_at?: string | null;
-          generator?: Database["public"]["Enums"]["document_generator"];
+          generator?: Database["careerops"]["Enums"]["document_generator"];
           id?: string;
           rendered_md?: string | null;
-          status?: Database["public"]["Enums"]["document_status"];
+          status?: Database["careerops"]["Enums"]["document_status"];
           updated_at?: string | null;
           user_id: string;
           version: number;
@@ -122,10 +97,10 @@ export type Database = {
           created_at?: string;
           document_id?: string;
           frozen_at?: string | null;
-          generator?: Database["public"]["Enums"]["document_generator"];
+          generator?: Database["careerops"]["Enums"]["document_generator"];
           id?: string;
           rendered_md?: string | null;
-          status?: Database["public"]["Enums"]["document_status"];
+          status?: Database["careerops"]["Enums"]["document_status"];
           updated_at?: string | null;
           user_id?: string;
           version?: number;
@@ -145,7 +120,7 @@ export type Database = {
           created_at: string;
           id: string;
           job_id: string | null;
-          kind: Database["public"]["Enums"]["document_kind"];
+          kind: Database["careerops"]["Enums"]["document_kind"];
           language: string;
           organization_id: string | null;
           project_id: string | null;
@@ -158,7 +133,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           job_id?: string | null;
-          kind: Database["public"]["Enums"]["document_kind"];
+          kind: Database["careerops"]["Enums"]["document_kind"];
           language?: string;
           organization_id?: string | null;
           project_id?: string | null;
@@ -171,7 +146,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           job_id?: string | null;
-          kind?: Database["public"]["Enums"]["document_kind"];
+          kind?: Database["careerops"]["Enums"]["document_kind"];
           language?: string;
           organization_id?: string | null;
           project_id?: string | null;
@@ -221,7 +196,7 @@ export type Database = {
           updated_at: string | null;
           user_id: string;
           verified_at: string | null;
-          visibility: Database["public"]["Enums"]["visibility"];
+          visibility: Database["careerops"]["Enums"]["visibility"];
         };
         Insert: {
           created_at?: string;
@@ -232,7 +207,7 @@ export type Database = {
           updated_at?: string | null;
           user_id: string;
           verified_at?: string | null;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Update: {
           created_at?: string;
@@ -243,7 +218,7 @@ export type Database = {
           updated_at?: string | null;
           user_id?: string;
           verified_at?: string | null;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Relationships: [
           {
@@ -259,9 +234,9 @@ export type Database = {
         Row: {
           ai_allowed: boolean;
           created_at: string;
-          date_precision: Database["public"]["Enums"]["date_precision"];
-          disclosure_status: Database["public"]["Enums"]["disclosure_status"];
-          employment_type: Database["public"]["Enums"]["employment_type"];
+          date_precision: Database["careerops"]["Enums"]["date_precision"];
+          disclosure_status: Database["careerops"]["Enums"]["disclosure_status"];
+          employment_type: Database["careerops"]["Enums"]["employment_type"];
           end_date: string | null;
           id: string;
           location: string | null;
@@ -273,14 +248,14 @@ export type Database = {
           title: string;
           updated_at: string | null;
           user_id: string;
-          visibility: Database["public"]["Enums"]["visibility"];
+          visibility: Database["careerops"]["Enums"]["visibility"];
         };
         Insert: {
           ai_allowed?: boolean;
           created_at?: string;
-          date_precision?: Database["public"]["Enums"]["date_precision"];
-          disclosure_status?: Database["public"]["Enums"]["disclosure_status"];
-          employment_type: Database["public"]["Enums"]["employment_type"];
+          date_precision?: Database["careerops"]["Enums"]["date_precision"];
+          disclosure_status?: Database["careerops"]["Enums"]["disclosure_status"];
+          employment_type: Database["careerops"]["Enums"]["employment_type"];
           end_date?: string | null;
           id?: string;
           location?: string | null;
@@ -292,14 +267,14 @@ export type Database = {
           title: string;
           updated_at?: string | null;
           user_id: string;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Update: {
           ai_allowed?: boolean;
           created_at?: string;
-          date_precision?: Database["public"]["Enums"]["date_precision"];
-          disclosure_status?: Database["public"]["Enums"]["disclosure_status"];
-          employment_type?: Database["public"]["Enums"]["employment_type"];
+          date_precision?: Database["careerops"]["Enums"]["date_precision"];
+          disclosure_status?: Database["careerops"]["Enums"]["disclosure_status"];
+          employment_type?: Database["careerops"]["Enums"]["employment_type"];
           end_date?: string | null;
           id?: string;
           location?: string | null;
@@ -311,7 +286,7 @@ export type Database = {
           title?: string;
           updated_at?: string | null;
           user_id?: string;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Relationships: [];
       };
@@ -330,14 +305,14 @@ export type Database = {
           posted_at: string | null;
           raw_text: string;
           relevance: number | null;
-          remote_policy: Database["public"]["Enums"]["remote_policy"];
+          remote_policy: Database["careerops"]["Enums"]["remote_policy"];
           salary_currency: string | null;
           salary_max: number | null;
           salary_min: number | null;
           seniority: string | null;
-          source_kind: Database["public"]["Enums"]["job_source_kind"];
+          source_kind: Database["careerops"]["Enums"]["job_source_kind"];
           source_url: string | null;
-          status: Database["public"]["Enums"]["job_status"];
+          status: Database["careerops"]["Enums"]["job_status"];
           target_role_id: string | null;
           title: string;
           updated_at: string | null;
@@ -358,14 +333,14 @@ export type Database = {
           posted_at?: string | null;
           raw_text: string;
           relevance?: number | null;
-          remote_policy?: Database["public"]["Enums"]["remote_policy"];
+          remote_policy?: Database["careerops"]["Enums"]["remote_policy"];
           salary_currency?: string | null;
           salary_max?: number | null;
           salary_min?: number | null;
           seniority?: string | null;
-          source_kind?: Database["public"]["Enums"]["job_source_kind"];
+          source_kind?: Database["careerops"]["Enums"]["job_source_kind"];
           source_url?: string | null;
-          status?: Database["public"]["Enums"]["job_status"];
+          status?: Database["careerops"]["Enums"]["job_status"];
           target_role_id?: string | null;
           title: string;
           updated_at?: string | null;
@@ -386,14 +361,14 @@ export type Database = {
           posted_at?: string | null;
           raw_text?: string;
           relevance?: number | null;
-          remote_policy?: Database["public"]["Enums"]["remote_policy"];
+          remote_policy?: Database["careerops"]["Enums"]["remote_policy"];
           salary_currency?: string | null;
           salary_max?: number | null;
           salary_min?: number | null;
           seniority?: string | null;
-          source_kind?: Database["public"]["Enums"]["job_source_kind"];
+          source_kind?: Database["careerops"]["Enums"]["job_source_kind"];
           source_url?: string | null;
-          status?: Database["public"]["Enums"]["job_status"];
+          status?: Database["careerops"]["Enums"]["job_status"];
           target_role_id?: string | null;
           title?: string;
           updated_at?: string | null;
@@ -420,10 +395,10 @@ export type Database = {
       opportunities: {
         Row: {
           angle: string | null;
-          comp_basis: Database["public"]["Enums"]["comp_basis"];
+          comp_basis: Database["careerops"]["Enums"]["comp_basis"];
           comp_currency: string | null;
-          comp_period: Database["public"]["Enums"]["comp_period"];
-          contract_type: Database["public"]["Enums"]["contract_type"] | null;
+          comp_period: Database["careerops"]["Enums"]["comp_period"];
+          contract_type: Database["careerops"]["Enums"]["contract_type"] | null;
           created_at: string;
           expected_comp: number | null;
           first_contact_at: string | null;
@@ -434,25 +409,25 @@ export type Database = {
           next_action_due: string | null;
           offered_comp: number | null;
           organization_id: string | null;
-          origin: Database["public"]["Enums"]["opportunity_origin"];
-          outcome: Database["public"]["Enums"]["opportunity_outcome"];
+          origin: Database["careerops"]["Enums"]["opportunity_origin"];
+          outcome: Database["careerops"]["Enums"]["opportunity_outcome"];
           project_id: string | null;
           receptiveness: number | null;
-          remote_policy: Database["public"]["Enums"]["remote_policy"];
-          stage: Database["public"]["Enums"]["opportunity_stage"];
+          remote_policy: Database["careerops"]["Enums"]["remote_policy"];
+          stage: Database["careerops"]["Enums"]["opportunity_stage"];
           target_role_id: string | null;
           terms_notes: string | null;
           title: string;
-          track: Database["public"]["Enums"]["opportunity_track"];
+          track: Database["careerops"]["Enums"]["opportunity_track"];
           updated_at: string | null;
           user_id: string;
         };
         Insert: {
           angle?: string | null;
-          comp_basis?: Database["public"]["Enums"]["comp_basis"];
+          comp_basis?: Database["careerops"]["Enums"]["comp_basis"];
           comp_currency?: string | null;
-          comp_period?: Database["public"]["Enums"]["comp_period"];
-          contract_type?: Database["public"]["Enums"]["contract_type"] | null;
+          comp_period?: Database["careerops"]["Enums"]["comp_period"];
+          contract_type?: Database["careerops"]["Enums"]["contract_type"] | null;
           created_at?: string;
           expected_comp?: number | null;
           first_contact_at?: string | null;
@@ -463,25 +438,25 @@ export type Database = {
           next_action_due?: string | null;
           offered_comp?: number | null;
           organization_id?: string | null;
-          origin: Database["public"]["Enums"]["opportunity_origin"];
-          outcome?: Database["public"]["Enums"]["opportunity_outcome"];
+          origin: Database["careerops"]["Enums"]["opportunity_origin"];
+          outcome?: Database["careerops"]["Enums"]["opportunity_outcome"];
           project_id?: string | null;
           receptiveness?: number | null;
-          remote_policy?: Database["public"]["Enums"]["remote_policy"];
-          stage?: Database["public"]["Enums"]["opportunity_stage"];
+          remote_policy?: Database["careerops"]["Enums"]["remote_policy"];
+          stage?: Database["careerops"]["Enums"]["opportunity_stage"];
           target_role_id?: string | null;
           terms_notes?: string | null;
           title: string;
-          track?: Database["public"]["Enums"]["opportunity_track"];
+          track?: Database["careerops"]["Enums"]["opportunity_track"];
           updated_at?: string | null;
           user_id: string;
         };
         Update: {
           angle?: string | null;
-          comp_basis?: Database["public"]["Enums"]["comp_basis"];
+          comp_basis?: Database["careerops"]["Enums"]["comp_basis"];
           comp_currency?: string | null;
-          comp_period?: Database["public"]["Enums"]["comp_period"];
-          contract_type?: Database["public"]["Enums"]["contract_type"] | null;
+          comp_period?: Database["careerops"]["Enums"]["comp_period"];
+          contract_type?: Database["careerops"]["Enums"]["contract_type"] | null;
           created_at?: string;
           expected_comp?: number | null;
           first_contact_at?: string | null;
@@ -492,16 +467,16 @@ export type Database = {
           next_action_due?: string | null;
           offered_comp?: number | null;
           organization_id?: string | null;
-          origin?: Database["public"]["Enums"]["opportunity_origin"];
-          outcome?: Database["public"]["Enums"]["opportunity_outcome"];
+          origin?: Database["careerops"]["Enums"]["opportunity_origin"];
+          outcome?: Database["careerops"]["Enums"]["opportunity_outcome"];
           project_id?: string | null;
           receptiveness?: number | null;
-          remote_policy?: Database["public"]["Enums"]["remote_policy"];
-          stage?: Database["public"]["Enums"]["opportunity_stage"];
+          remote_policy?: Database["careerops"]["Enums"]["remote_policy"];
+          stage?: Database["careerops"]["Enums"]["opportunity_stage"];
           target_role_id?: string | null;
           terms_notes?: string | null;
           title?: string;
-          track?: Database["public"]["Enums"]["opportunity_track"];
+          track?: Database["careerops"]["Enums"]["opportunity_track"];
           updated_at?: string | null;
           user_id?: string;
         };
@@ -542,7 +517,7 @@ export type Database = {
           document_version_id: string;
           id: string;
           opportunity_id: string;
-          role: Database["public"]["Enums"]["document_kind"];
+          role: Database["careerops"]["Enums"]["document_kind"];
           sent_at: string;
           user_id: string;
         };
@@ -551,7 +526,7 @@ export type Database = {
           document_version_id: string;
           id?: string;
           opportunity_id: string;
-          role: Database["public"]["Enums"]["document_kind"];
+          role: Database["careerops"]["Enums"]["document_kind"];
           sent_at?: string;
           user_id: string;
         };
@@ -560,7 +535,7 @@ export type Database = {
           document_version_id?: string;
           id?: string;
           opportunity_id?: string;
-          role?: Database["public"]["Enums"]["document_kind"];
+          role?: Database["careerops"]["Enums"]["document_kind"];
           sent_at?: string;
           user_id?: string;
         };
@@ -584,38 +559,38 @@ export type Database = {
       opportunity_events: {
         Row: {
           created_at: string;
-          from_stage: Database["public"]["Enums"]["opportunity_stage"] | null;
+          from_stage: Database["careerops"]["Enums"]["opportunity_stage"] | null;
           id: string;
-          interview_kind: Database["public"]["Enums"]["interview_kind"] | null;
+          interview_kind: Database["careerops"]["Enums"]["interview_kind"] | null;
           note: string | null;
           occurred_at: string;
           opportunity_id: string;
-          to_stage: Database["public"]["Enums"]["opportunity_stage"] | null;
-          type: Database["public"]["Enums"]["opportunity_event_type"];
+          to_stage: Database["careerops"]["Enums"]["opportunity_stage"] | null;
+          type: Database["careerops"]["Enums"]["opportunity_event_type"];
           user_id: string;
         };
         Insert: {
           created_at?: string;
-          from_stage?: Database["public"]["Enums"]["opportunity_stage"] | null;
+          from_stage?: Database["careerops"]["Enums"]["opportunity_stage"] | null;
           id?: string;
-          interview_kind?: Database["public"]["Enums"]["interview_kind"] | null;
+          interview_kind?: Database["careerops"]["Enums"]["interview_kind"] | null;
           note?: string | null;
           occurred_at?: string;
           opportunity_id: string;
-          to_stage?: Database["public"]["Enums"]["opportunity_stage"] | null;
-          type: Database["public"]["Enums"]["opportunity_event_type"];
+          to_stage?: Database["careerops"]["Enums"]["opportunity_stage"] | null;
+          type: Database["careerops"]["Enums"]["opportunity_event_type"];
           user_id: string;
         };
         Update: {
           created_at?: string;
-          from_stage?: Database["public"]["Enums"]["opportunity_stage"] | null;
+          from_stage?: Database["careerops"]["Enums"]["opportunity_stage"] | null;
           id?: string;
-          interview_kind?: Database["public"]["Enums"]["interview_kind"] | null;
+          interview_kind?: Database["careerops"]["Enums"]["interview_kind"] | null;
           note?: string | null;
           occurred_at?: string;
           opportunity_id?: string;
-          to_stage?: Database["public"]["Enums"]["opportunity_stage"] | null;
-          type?: Database["public"]["Enums"]["opportunity_event_type"];
+          to_stage?: Database["careerops"]["Enums"]["opportunity_stage"] | null;
+          type?: Database["careerops"]["Enums"]["opportunity_event_type"];
           user_id?: string;
         };
         Relationships: [
@@ -644,7 +619,7 @@ export type Database = {
           source_urls: string[];
           updated_at: string | null;
           user_id: string;
-          visibility: Database["public"]["Enums"]["visibility"];
+          visibility: Database["careerops"]["Enums"]["visibility"];
         };
         Insert: {
           created_at?: string;
@@ -661,7 +636,7 @@ export type Database = {
           source_urls?: string[];
           updated_at?: string | null;
           user_id: string;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Update: {
           created_at?: string;
@@ -678,7 +653,7 @@ export type Database = {
           source_urls?: string[];
           updated_at?: string | null;
           user_id?: string;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Relationships: [];
       };
@@ -691,7 +666,7 @@ export type Database = {
           location: string | null;
           open_to_relocation: boolean;
           public_slug: string | null;
-          remote_preference: Database["public"]["Enums"]["remote_policy"];
+          remote_preference: Database["careerops"]["Enums"]["remote_policy"];
           summary: string | null;
           timezone: string | null;
           updated_at: string | null;
@@ -706,7 +681,7 @@ export type Database = {
           location?: string | null;
           open_to_relocation?: boolean;
           public_slug?: string | null;
-          remote_preference?: Database["public"]["Enums"]["remote_policy"];
+          remote_preference?: Database["careerops"]["Enums"]["remote_policy"];
           summary?: string | null;
           timezone?: string | null;
           updated_at?: string | null;
@@ -721,7 +696,7 @@ export type Database = {
           location?: string | null;
           open_to_relocation?: boolean;
           public_slug?: string | null;
-          remote_preference?: Database["public"]["Enums"]["remote_policy"];
+          remote_preference?: Database["careerops"]["Enums"]["remote_policy"];
           summary?: string | null;
           timezone?: string | null;
           updated_at?: string | null;
@@ -734,20 +709,20 @@ export type Database = {
         Row: {
           ai_allowed: boolean;
           architecture_md: string | null;
-          code_visibility: Database["public"]["Enums"]["code_visibility"];
+          code_visibility: Database["careerops"]["Enums"]["code_visibility"];
           constraints: string | null;
           created_at: string;
-          date_precision: Database["public"]["Enums"]["date_precision"];
-          disclosure_status: Database["public"]["Enums"]["disclosure_status"];
+          date_precision: Database["careerops"]["Enums"]["date_precision"];
+          disclosure_status: Database["careerops"]["Enums"]["disclosure_status"];
           employment_id: string | null;
           ended_at: string | null;
           id: string;
-          ip_owner: Database["public"]["Enums"]["ip_owner"];
-          kind: Database["public"]["Enums"]["project_kind"];
+          ip_owner: Database["careerops"]["Enums"]["ip_owner"];
+          kind: Database["careerops"]["Enums"]["project_kind"];
           live_url: string | null;
           name: string;
-          operational_status: Database["public"]["Enums"]["operational_status"];
-          ownership: Database["public"]["Enums"]["project_ownership"];
+          operational_status: Database["careerops"]["Enums"]["operational_status"];
+          ownership: Database["careerops"]["Enums"]["project_ownership"];
           parent_project_id: string | null;
           problem: string | null;
           repo_url: string | null;
@@ -759,25 +734,25 @@ export type Database = {
           store_urls: Json;
           updated_at: string | null;
           user_id: string;
-          visibility: Database["public"]["Enums"]["visibility"];
+          visibility: Database["careerops"]["Enums"]["visibility"];
         };
         Insert: {
           ai_allowed?: boolean;
           architecture_md?: string | null;
-          code_visibility?: Database["public"]["Enums"]["code_visibility"];
+          code_visibility?: Database["careerops"]["Enums"]["code_visibility"];
           constraints?: string | null;
           created_at?: string;
-          date_precision?: Database["public"]["Enums"]["date_precision"];
-          disclosure_status?: Database["public"]["Enums"]["disclosure_status"];
+          date_precision?: Database["careerops"]["Enums"]["date_precision"];
+          disclosure_status?: Database["careerops"]["Enums"]["disclosure_status"];
           employment_id?: string | null;
           ended_at?: string | null;
           id?: string;
-          ip_owner?: Database["public"]["Enums"]["ip_owner"];
-          kind: Database["public"]["Enums"]["project_kind"];
+          ip_owner?: Database["careerops"]["Enums"]["ip_owner"];
+          kind: Database["careerops"]["Enums"]["project_kind"];
           live_url?: string | null;
           name: string;
-          operational_status?: Database["public"]["Enums"]["operational_status"];
-          ownership?: Database["public"]["Enums"]["project_ownership"];
+          operational_status?: Database["careerops"]["Enums"]["operational_status"];
+          ownership?: Database["careerops"]["Enums"]["project_ownership"];
           parent_project_id?: string | null;
           problem?: string | null;
           repo_url?: string | null;
@@ -789,25 +764,25 @@ export type Database = {
           store_urls?: Json;
           updated_at?: string | null;
           user_id: string;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Update: {
           ai_allowed?: boolean;
           architecture_md?: string | null;
-          code_visibility?: Database["public"]["Enums"]["code_visibility"];
+          code_visibility?: Database["careerops"]["Enums"]["code_visibility"];
           constraints?: string | null;
           created_at?: string;
-          date_precision?: Database["public"]["Enums"]["date_precision"];
-          disclosure_status?: Database["public"]["Enums"]["disclosure_status"];
+          date_precision?: Database["careerops"]["Enums"]["date_precision"];
+          disclosure_status?: Database["careerops"]["Enums"]["disclosure_status"];
           employment_id?: string | null;
           ended_at?: string | null;
           id?: string;
-          ip_owner?: Database["public"]["Enums"]["ip_owner"];
-          kind?: Database["public"]["Enums"]["project_kind"];
+          ip_owner?: Database["careerops"]["Enums"]["ip_owner"];
+          kind?: Database["careerops"]["Enums"]["project_kind"];
           live_url?: string | null;
           name?: string;
-          operational_status?: Database["public"]["Enums"]["operational_status"];
-          ownership?: Database["public"]["Enums"]["project_ownership"];
+          operational_status?: Database["careerops"]["Enums"]["operational_status"];
+          ownership?: Database["careerops"]["Enums"]["project_ownership"];
           parent_project_id?: string | null;
           problem?: string | null;
           repo_url?: string | null;
@@ -819,7 +794,7 @@ export type Database = {
           store_urls?: Json;
           updated_at?: string | null;
           user_id?: string;
-          visibility?: Database["public"]["Enums"]["visibility"];
+          visibility?: Database["careerops"]["Enums"]["visibility"];
         };
         Relationships: [
           {
@@ -840,52 +815,52 @@ export type Database = {
       };
       target_roles: {
         Row: {
-          accepted_contract_types: Database["public"]["Enums"]["contract_type"][];
-          comp_basis: Database["public"]["Enums"]["comp_basis"];
+          accepted_contract_types: Database["careerops"]["Enums"]["contract_type"][];
+          comp_basis: Database["careerops"]["Enums"]["comp_basis"];
           comp_currency: string | null;
           comp_floor: number | null;
-          comp_period: Database["public"]["Enums"]["comp_period"];
+          comp_period: Database["careerops"]["Enums"]["comp_period"];
           created_at: string;
           id: string;
           name: string;
           positioning_note: string | null;
           seniority_band: string | null;
           status: string;
-          tier: Database["public"]["Enums"]["role_tier"];
+          tier: Database["careerops"]["Enums"]["role_tier"];
           updated_at: string | null;
           user_id: string;
           weight: number;
         };
         Insert: {
-          accepted_contract_types?: Database["public"]["Enums"]["contract_type"][];
-          comp_basis?: Database["public"]["Enums"]["comp_basis"];
+          accepted_contract_types?: Database["careerops"]["Enums"]["contract_type"][];
+          comp_basis?: Database["careerops"]["Enums"]["comp_basis"];
           comp_currency?: string | null;
           comp_floor?: number | null;
-          comp_period?: Database["public"]["Enums"]["comp_period"];
+          comp_period?: Database["careerops"]["Enums"]["comp_period"];
           created_at?: string;
           id?: string;
           name: string;
           positioning_note?: string | null;
           seniority_band?: string | null;
           status?: string;
-          tier?: Database["public"]["Enums"]["role_tier"];
+          tier?: Database["careerops"]["Enums"]["role_tier"];
           updated_at?: string | null;
           user_id: string;
           weight?: number;
         };
         Update: {
-          accepted_contract_types?: Database["public"]["Enums"]["contract_type"][];
-          comp_basis?: Database["public"]["Enums"]["comp_basis"];
+          accepted_contract_types?: Database["careerops"]["Enums"]["contract_type"][];
+          comp_basis?: Database["careerops"]["Enums"]["comp_basis"];
           comp_currency?: string | null;
           comp_floor?: number | null;
-          comp_period?: Database["public"]["Enums"]["comp_period"];
+          comp_period?: Database["careerops"]["Enums"]["comp_period"];
           created_at?: string;
           id?: string;
           name?: string;
           positioning_note?: string | null;
           seniority_band?: string | null;
           status?: string;
-          tier?: Database["public"]["Enums"]["role_tier"];
+          tier?: Database["careerops"]["Enums"]["role_tier"];
           updated_at?: string | null;
           user_id?: string;
           weight?: number;
@@ -898,12 +873,12 @@ export type Database = {
     };
     Functions: {
       disclosure_ceiling: {
-        Args: { status: Database["public"]["Enums"]["disclosure_status"] };
-        Returns: Database["public"]["Enums"]["visibility"];
+        Args: { status: Database["careerops"]["Enums"]["disclosure_status"] };
+        Returns: Database["careerops"]["Enums"]["visibility"];
       };
       document_kind_visibility_minimum: {
-        Args: { kind: Database["public"]["Enums"]["document_kind"] };
-        Returns: Database["public"]["Enums"]["visibility"];
+        Args: { kind: Database["careerops"]["Enums"]["document_kind"] };
+        Returns: Database["careerops"]["Enums"]["visibility"];
       };
     };
     Enums: {
@@ -1077,10 +1052,7 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
-  public: {
+  careerops: {
     Enums: {
       code_visibility: ["public", "private", "employer_owned"],
       comp_basis: ["gross", "net", "b2b_invoice"],

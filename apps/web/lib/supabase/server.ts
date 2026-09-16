@@ -17,6 +17,9 @@ export async function createClient() {
     requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
     requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
     {
+      // CareerOps owns one schema in a database it shares with another project
+      // (ADR-0016). Without this every query would silently target `public`.
+      db: { schema: "careerops" },
       cookies: {
         getAll() {
           return cookieStore.getAll();

@@ -1,5 +1,16 @@
 -- Enums, shared helpers and the visibility machinery every later table depends on.
 -- DOMAIN.md §4 (conventions), §5 (visibility and disclosure), §6 (invariants I1, I2, I3).
+--
+-- Everything CareerOps owns lives in its own schema (ADR-0016). The database
+-- this runs against also hosts another project, and `profiles`, `jobs`,
+-- `documents` and `organizations` are names almost any Supabase project already
+-- uses. A separate schema removes the collision entirely and makes the whole
+-- system revocable with one `drop schema careerops cascade`.
+create schema if not exists careerops;
+
+-- Unqualified objects below are created in careerops, not public. References to
+-- auth and extensions stay explicitly qualified.
+set search_path = careerops, public;
 
 -- Ordered visibility. Postgres compares enum values by declaration order, so
 -- `private < cv_safe < portfolio_public` holds for <, least() and greatest().

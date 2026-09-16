@@ -2,6 +2,8 @@
 -- DOMAIN.md invariants I2, I3, I4, I5. SPECIFICATION §8.
 
 begin;
+
+set search_path = careerops, public, extensions;
 select plan(11);
 
 create extension if not exists pgtap with schema extensions;

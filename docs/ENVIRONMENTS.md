@@ -19,6 +19,7 @@
 - Migrations flow in one direction: local → staging → production. Nobody edits a schema in the dashboard; CI checks for drift.
 - Secrets live in GitHub environment secrets (`staging`, `production`) and Vercel environment variables. `.env.example` lists names only.
 - The service-role key exists only in server-side environments and CI.
+- CareerOps shares a Supabase project with another live application and owns the `careerops` schema (ADR-0016). `supabase db reset` is never run against it: the command drops everything, including the other application. Migrations reach it only through `supabase db push`, which is additive.
 - Free tiers are used initially. Free Supabase projects pause after inactivity and have no point-in-time recovery, so the nightly production backup job also acts as a keep-alive and health check.
 
 ## Provisioning timeline

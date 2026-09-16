@@ -1,6 +1,9 @@
 -- Career history: the canonical employment record every CV guardrail depends on.
 -- DOMAIN.md §4.1.
 
+-- All objects are created in the careerops schema (ADR-0016), never public.
+set search_path = careerops, public;
+
 create table profiles (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null unique references auth.users on delete cascade,

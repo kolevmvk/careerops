@@ -4,6 +4,35 @@
 -- Every name, company and link below is invented. The persona exists so a
 -- reviewer can click through the system, and so the thin loop has something
 -- to render before any real data is entered.
+--
+-- This file inserts into auth.users. The database CareerOps runs against also
+-- hosts another project whose auth.users are real customers, so running this
+-- there would put a fictional account among them.
+--
+-- The guard is emptiness, not hostname or port: both are identical between the
+-- local container and a hosted project, so neither can tell them apart. A
+-- database that already has accounts in it is not a place for a demo persona,
+-- wherever it runs. `supabase db reset` wipes first, so the local stack always
+-- passes; any database with real users refuses.
+do $$
+declare
+  existing int;
+begin
+  select count(*) into existing
+    from auth.users
+   where id <> '00000000-0000-4000-8000-000000000001';
+
+  if existing > 0 then
+    raise exception
+      'The demo seed refuses to run: auth.users already holds % account(s). '
+      'This database belongs to something else and the seed writes real auth rows.',
+      existing
+      using errcode = 'insufficient_privilege';
+  end if;
+end;
+$$;
+
+set search_path = careerops, public, extensions;
 
 -- The demo account must actually be able to sign in, because staging runs this
 -- seed and doubles as the public demo (ENVIRONMENTS.md). Inserting only id and
