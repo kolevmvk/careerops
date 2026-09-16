@@ -19,7 +19,7 @@ v1.1 modeled the career data well but scheduled the two capabilities that are th
 | Platform integration | Not modeled | Alert email is the **compliance layer** for platforms that forbid automated access; no credentialed access to any job platform (§7.2) | LinkedIn, Indeed and similar prohibit automation and enforce it. Reading one's own inbox does not. |
 | Funnel events | Manual entry | Email ingestion proposes `opportunity_events`; the user confirms (§7.3) | Manual event logging stops within weeks, so O2 never gets its funnel data. |
 | AI layer | v0.2, optional enhancement | **v0.1 carrier** for extraction, email triage and drafts; still fully optional at runtime (§9) | The deterministic core stays authoritative, but the useful paths now assume a provider exists. |
-| Clients | Web cockpit, Android companion | Adds an **agent-facing surface** (§13): MCP server plus machine-readable public facts | The party searching is increasingly an agent. A document optimized for a human reader is not retrievable by one. |
+| Clients | Web cockpit, mobile companion | Adds an **agent-facing surface** (§13): MCP server plus machine-readable public facts | The party searching is increasingly an agent. A document optimized for a human reader is not retrievable by one. |
 | Outbound profiles | Not modeled | One source of truth generates every platform profile; the user pastes them (§13.4) | Consistency across platforms is what AI sourcing actually reads today. |
 | Data classes | 4 | Adds `third_party_correspondence` (§10.1) | Recruiter mail is personal data belonging to other people and needs its own rule. |
 
@@ -40,7 +40,7 @@ v1.0 was reviewed against its own review brief (section 31) and against two furt
 | Schema | ~27 tables with duplicate paths | Duplicate paths removed; career history (employments, education, credentials, languages) added | CV guardrails need a canonical employment history. |
 | n8n | Automation layer in MVP | **Removed from v0.1**; Postgres triggers, `pg_cron`, database webhooks and API routes | One less service to host, secure and back up, and core logic stays in code. |
 | Local AI | Called from backend over Tailscale | **Pull-model worker** on the local machine consumes a queue | Vercel and Supabase functions are not on the tailnet. |
-| Android | In v0.1 | **v0.2**; v0.1 gets a PWA share target for quick capture | Keeps v0.1 finishable; the companion follows once the data model is stable. |
+| Mobile | In v0.1 | **v0.2**; v0.1 gets a PWA share target for quick capture | Keeps v0.1 finishable; the companion follows once the data model is stable. |
 | Public repository | Real seed data in `seed.sql` | **Public code, private data**: demo persona seed in the repo, real data only in Supabase and encrypted backups | The repository is portfolio evidence and must never leak career data. |
 
 ---
@@ -134,7 +134,7 @@ Concrete target roles, weights, compensation floors and organization lists are *
 
 ### 4.2 v0.2
 
-- Flutter Android companion (§12)
+- Flutter companion for iOS and Android (§12)
 - Cloud AI provider as an alternative to the local worker (§9)
 - Public portfolio site and public demo instance
 - Funnel dashboards per track
@@ -165,7 +165,7 @@ Concrete target roles, weights, compensation floors and organization lists are *
 flowchart LR
     subgraph Clients
         W[Next.js web cockpit<br/>+ PWA share target]
-        M[Flutter Android companion<br/>v0.2]
+        M[Flutter companion<br/>iOS · Android]
         AG[Agent surface<br/>MCP · JSON-LD · llms.txt]
     end
     subgraph Sources
@@ -466,7 +466,20 @@ Dashboard order: readiness → gaps → focus actions → opportunities → evid
 
 ---
 
-## 12. Android companion (v0.2)
+## 12. Mobile companion (iOS and Android)
+
+The owner's command centre. It is where the pipeline is checked between
+meetings, so its job is legibility and control rather than breadth: full
+editing stays on the web, and anything that needs recomputation goes through an
+API route.
+
+Flutter targets both platforms from one codebase, so adding iOS is a delivery
+question rather than a development one. Two consequences follow. iOS builds
+need a macOS runner, which bills at ten times the Linux rate, so the iOS job
+runs on tags rather than on every push. And a single-user command centre does
+not need App Store distribution at all - TestFlight internal testing puts it on
+the owner's devices without review. The store listing would add nothing, since
+two shipped applications already serve as release-engineering evidence.
 
 Deliberately small, three tabs:
 
@@ -618,7 +631,7 @@ CareerOps is itself evidence for the target roles. Each engineering practice bel
 | 6 · Agent surface | `public_facts`, JSON-LD, `llms.txt`, MCP server, platform profile generation | A third-party agent can query public evidence; profiles regenerate from one source |
 | 7 · Execution | Roadmap, tasks, learning | Gaps turn into evidence-producing work |
 | 8 · Platform | Terraform, OIDC, backups, restore drill, observability, threat model | The system is recoverable, and the repository stands as DevOps evidence |
-| 9 · Companion and public | Flutter Android app, demo instance, portfolio site | Capture works from the phone; a reviewer explores the system without real data |
+| 9 · Companion and public | Flutter companion for iOS and Android, demo instance, portfolio site | Capture works from the phone; a reviewer explores the system without real data |
 
 **Phase 2 is the change that matters.** In v1.1 the first real career output arrived in phase 4, behind the data model, the proof model and the market model. It now arrives second, on a deliberately thin slice: a CV can be tailored from a career-history table without a scoring engine. Scoring makes the output smarter; it is not what makes it work. Everything after phase 2 improves a loop that already runs.
 
@@ -681,7 +694,8 @@ Every phase must produce a career output. A phase that produces only internal ma
 | O2 | Primary positioning axis | **Proof-led: integration and edge systems**, with infrastructure and operations as the differentiating supporting axis; reviewed on funnel data after 8 weeks | The goal is to be hired as someone who has already built what the employer needs |
 | O3 | Compensation floors | **Resolved by O9** (2026-09-16); the terms gate no longer reports `unknown` | Numbers cannot be derived from documents; they needed owner input |
 | O4 | Product names in public documentation | Product names allowed (already public through store listings and professional profile); employer names stay out of the public repository | Showcase value without exposing employer relationships |
-| O5 | Android companion timing | v0.2 as proposed | Mobile delivery is already proven by the shipped product; v0.1 must produce career outcomes first |
+| O5 | Mobile companion timing | v0.2 as proposed | Mobile delivery is already proven by the shipped product; v0.1 must produce career outcomes first |
+| O10 | Mobile platforms | **iOS and Android**, one Flutter codebase. Distribution through TestFlight and an Android internal track, not public store listings. | A paid Apple Developer account exists; a single-user command centre gains nothing from store review, and store evidence already comes from the shipped products |
 | O6 | Job platform integration | **No credentialed or automated access.** Intake through public ATS APIs and the user's own mailbox. | The platforms prohibit automation and enforce it; the compliant lane reaches the same postings (ADR-0015) |
 | O7 | Agent surface scope | **Read-only over `portfolio_public` facts**, pull only, no write or contact tools | Justified as agent grounding and portfolio evidence, not as a traffic channel (ADR-0014) |
 | O8 | Mail processing location | **Local worker on the tailnet by default**; cloud provider only if explicitly enabled for `third_party_correspondence` | Correspondence contains other people's personal data |

@@ -7,6 +7,7 @@
 | **Database** | Supabase CLI stack in Docker | Supabase project `careerops-staging` (EU) | Supabase project `careerops-production` (EU) |
 | **Data** | `supabase/seed/demo.sql` | Fictional demo persona only | Real career data |
 | **Web** | `pnpm dev` | Vercel project, staging domain | Vercel project, production domain |
+| **Mobile** | Simulator and device | TestFlight internal, Android internal track | Same tracks; no public store listing |
 | **Deploy** | — | Automatic on merge to `develop` | On release, after approval in the `production` environment |
 | **Migrations** | `supabase db reset` | `supabase db push` in CI | `supabase db push` in CI, after staging succeeded |
 | **Auth** | Local users | Demo account, sign-ups disabled | Single owner account with MFA, sign-ups disabled |
