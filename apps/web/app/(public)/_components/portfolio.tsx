@@ -1,27 +1,31 @@
 import Link from "next/link";
 
 import { LOCALES, LOCALE_NAMES, localePath, type Locale } from "@/lib/i18n.ts";
-import { createPublicClient } from "@/lib/supabase/public.ts";
+import { readPublic } from "@/lib/supabase/public.ts";
 
 import { messagesFor } from "../_lib/messages.ts";
 
 export async function loadPortfolio(locale: Locale) {
-  const supabase = createPublicClient();
+  return readPublic(
+    `portfolio(${locale})`,
+    async (supabase) => {
+      const [{ data: profile }, { data: facts }] = await Promise.all([
+        supabase
+          .from("public_profiles")
+          .select("public_slug, full_name, headline, summary, location")
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("public_facts")
+          .select("id, kind, title, slug, body, repo_url, live_url, happened_at, is_fallback")
+          .eq("locale", locale)
+          .order("happened_at", { ascending: false }),
+      ]);
 
-  const [{ data: profile }, { data: facts }] = await Promise.all([
-    supabase
-      .from("public_profiles")
-      .select("public_slug, full_name, headline, summary, location")
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from("public_facts")
-      .select("id, kind, title, slug, body, repo_url, live_url, happened_at, is_fallback")
-      .eq("locale", locale)
-      .order("happened_at", { ascending: false }),
-  ]);
-
-  return { profile, facts: facts ?? [] };
+      return { profile, facts: facts ?? [] };
+    },
+    { profile: null, facts: [] },
+  );
 }
 
 export async function Portfolio({ locale }: { locale: Locale }) {

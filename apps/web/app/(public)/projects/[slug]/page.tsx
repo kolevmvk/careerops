@@ -2,29 +2,51 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { createPublicClient } from "@/lib/supabase/public.ts";
+import { SOURCE_LOCALE } from "@/lib/i18n.ts";
+
+import { readPublic } from "@/lib/supabase/public.ts";
 
 export const revalidate = 3600;
 
 async function loadProject(slug: string) {
-  const supabase = createPublicClient();
-  const { data } = await supabase
-    .from("public_facts")
-    .select("id, title, slug, body, repo_url, live_url, happened_at")
-    .eq("kind", "project")
-    .eq("slug", slug)
-    .maybeSingle();
+  return readPublic(
+    `project(${slug})`,
+    async (supabase) => {
+      const { data } = await supabase
+        .from("public_facts")
+        .select("id, title, slug, body, repo_url, live_url, happened_at")
+        .eq("kind", "project")
+        .eq("locale", SOURCE_LOCALE)
+        .eq("slug", slug)
+        .maybeSingle();
 
-  return data;
+      return data;
+    },
+    null,
+  );
 }
 
+/**
+ * Returns nothing when the database is unreachable. Pages are then generated
+ * on demand instead of at build time, which is the right trade: a build that
+ * cannot run without a database is a deploy that cannot run without one.
+ */
 export async function generateStaticParams() {
-  const supabase = createPublicClient();
-  const { data } = await supabase.from("public_facts").select("slug").eq("kind", "project");
+  return readPublic(
+    "project slugs",
+    async (supabase) => {
+      const { data } = await supabase
+        .from("public_facts")
+        .select("slug")
+        .eq("kind", "project")
+        .eq("locale", SOURCE_LOCALE);
 
-  return (data ?? [])
-    .filter((row): row is { slug: string } => row.slug !== null)
-    .map((row) => ({ slug: row.slug }));
+      return (data ?? [])
+        .filter((row): row is { slug: string } => row.slug !== null)
+        .map((row) => ({ slug: row.slug }));
+    },
+    [] as { slug: string }[],
+  );
 }
 
 export async function generateMetadata({

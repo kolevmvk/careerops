@@ -1,4 +1,5 @@
-import { createPublicClient } from "@/lib/supabase/public.ts";
+import { SOURCE_LOCALE } from "@/lib/i18n.ts";
+import { readPublic } from "@/lib/supabase/public.ts";
 
 export const revalidate = 3600;
 
@@ -8,19 +9,26 @@ export const revalidate = 3600;
  * `public_facts`, so it can never contain a claim the portfolio would not show.
  */
 export async function GET(): Promise<Response> {
-  const supabase = createPublicClient();
+  const { profile, facts } = await readPublic(
+    "llms.txt",
+    async (supabase) => {
+      const [{ data: profileRow }, { data: factRows }] = await Promise.all([
+        supabase
+          .from("public_profiles")
+          .select("full_name, headline, summary, location")
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("public_facts")
+          .select("kind, title, slug, body, repo_url, live_url")
+          .eq("locale", SOURCE_LOCALE)
+          .order("happened_at", { ascending: false }),
+      ]);
 
-  const [{ data: profile }, { data: facts }] = await Promise.all([
-    supabase
-      .from("public_profiles")
-      .select("full_name, headline, summary, location")
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from("public_facts")
-      .select("kind, title, slug, body, repo_url, live_url")
-      .order("happened_at", { ascending: false }),
-  ]);
+      return { profile: profileRow, facts: factRows };
+    },
+    { profile: null, facts: [] as never[] },
+  );
 
   if (profile === null) {
     return new Response("# Nothing published\n", {
