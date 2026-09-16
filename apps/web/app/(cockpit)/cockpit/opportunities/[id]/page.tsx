@@ -75,7 +75,7 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
       .eq("id", id);
 
     if (error !== null) throw new Error(error.message);
-    revalidatePath(`/opportunities/${id}`);
+    revalidatePath(`/cockpit/opportunities/${id}`);
   }
 
   async function attachDocument(formData: FormData) {
@@ -94,7 +94,7 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
     });
 
     if (error !== null) throw new Error(error.message);
-    revalidatePath(`/opportunities/${id}`);
+    revalidatePath(`/cockpit/opportunities/${id}`);
   }
 
   async function addNote(formData: FormData) {
@@ -116,7 +116,7 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
     });
 
     if (error !== null) throw new Error(error.message);
-    revalidatePath(`/opportunities/${id}`);
+    revalidatePath(`/cockpit/opportunities/${id}`);
   }
 
   const attachedIds = new Set((attached ?? []).map((row) => row.document_versions?.id));
@@ -126,7 +126,7 @@ export default async function OpportunityPage({ params }: { params: Promise<{ id
       <header className="flex items-baseline justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">{opportunity.title}</h1>
         <Link
-          href="/opportunities"
+          href="/cockpit/opportunities"
           className="text-sm text-(--color-accent) underline underline-offset-4"
         >
           Pipeline

@@ -30,17 +30,23 @@ export default async function DashboardPage() {
       <header className="flex items-baseline justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">CareerOps</h1>
         <nav className="flex gap-4 text-sm">
-          <Link href="/history" className="text-(--color-accent) underline underline-offset-4">
+          <Link
+            href="/cockpit/history"
+            className="text-(--color-accent) underline underline-offset-4"
+          >
             History
           </Link>
-          <Link href="/jobs" className="text-(--color-accent) underline underline-offset-4">
+          <Link href="/cockpit/jobs" className="text-(--color-accent) underline underline-offset-4">
             Job ads
           </Link>
-          <Link href="/documents" className="text-(--color-accent) underline underline-offset-4">
+          <Link
+            href="/cockpit/documents"
+            className="text-(--color-accent) underline underline-offset-4"
+          >
             Documents
           </Link>
           <Link
-            href="/opportunities"
+            href="/cockpit/opportunities"
             className="text-(--color-accent) underline underline-offset-4"
           >
             Pipeline

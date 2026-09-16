@@ -231,6 +231,57 @@ values
   )
 on conflict (id) do nothing;
 
+-- An independent project, owned outright, so the public portfolio has something
+-- to show. The employer-owned family above deliberately cannot be published:
+-- ip_owner forces approval_required, which caps it at cv_safe.
+insert into projects (
+  id, user_id, name, slug, kind, role, ownership,
+  problem, solution, result, operational_status, started_at,
+  ip_owner, code_visibility, repo_url, visibility, disclosure_status
+)
+values (
+  '00000000-0000-4000-8000-000000000404',
+  '00000000-0000-4000-8000-000000000001',
+  'Offline Sync Reference', 'offline-sync-reference',
+  'lab', 'Author', 'sole',
+  'Mobile clients on unreliable networks duplicate or lose events.',
+  'A durable local queue with idempotent replay and a documented ordering model.',
+  'Six failure scenarios reproduced as tests rather than described in prose.',
+  'maintained', '2026-02-01',
+  'self', 'public', 'https://example.invalid/offline-sync-reference',
+  'portfolio_public', 'not_required'
+)
+on conflict (id) do nothing;
+
+-- A published highlight needs its employment published too (I1), so this one
+-- gets its own employment rather than raising the ceiling on the others.
+insert into employments (
+  id, user_id, organization, public_organization, title, public_title,
+  employment_type, start_date, location, summary, visibility, disclosure_status
+)
+values (
+  '00000000-0000-4000-8000-000000000203',
+  '00000000-0000-4000-8000-000000000001',
+  'Independent', 'Independent', 'Engineer', 'Engineer',
+  'freelance', '2026-01-01', 'Remote',
+  'Independent engineering work published under own name.',
+  'portfolio_public', 'not_required'
+)
+on conflict (id) do nothing;
+
+insert into employment_highlights (
+  id, user_id, employment_id, text, visibility, verified_at, sort_order
+)
+values (
+  '00000000-0000-4000-8000-000000000304',
+  '00000000-0000-4000-8000-000000000001',
+  '00000000-0000-4000-8000-000000000203',
+  'Published a reference implementation of offline event capture with '
+  'idempotent replay, covered by reproducible failure tests.',
+  'portfolio_public', now(), 1
+)
+on conflict (id) do nothing;
+
 -- One ad per intake lane, so the corpus view has something to group.
 insert into jobs (
   id, user_id, target_role_id, company, title, location, remote_policy,

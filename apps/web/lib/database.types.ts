@@ -869,7 +869,44 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      public_facts: {
+        Row: {
+          body: string | null;
+          happened_at: string | null;
+          id: string | null;
+          kind: string | null;
+          live_url: string | null;
+          public_slug: string | null;
+          repo_url: string | null;
+          slug: string | null;
+          title: string | null;
+        };
+        Relationships: [];
+      };
+      public_profiles: {
+        Row: {
+          full_name: string | null;
+          headline: string | null;
+          location: string | null;
+          public_slug: string | null;
+          summary: string | null;
+        };
+        Insert: {
+          full_name?: string | null;
+          headline?: string | null;
+          location?: string | null;
+          public_slug?: string | null;
+          summary?: string | null;
+        };
+        Update: {
+          full_name?: string | null;
+          headline?: string | null;
+          location?: string | null;
+          public_slug?: string | null;
+          summary?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       disclosure_ceiling: {

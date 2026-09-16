@@ -33,7 +33,7 @@ export default async function JobsPage({
     const sourceUrl = String(formData.get("source_url") ?? "").trim();
 
     if (rawText === "" || company === "" || title === "") {
-      redirect("/jobs");
+      redirect("/cockpit/jobs");
     }
 
     const supabaseAction = await createClient();
@@ -59,22 +59,25 @@ export default async function JobsPage({
     // The unique constraint on (user_id, content_hash) is the dedupe, so a
     // second paste of the same ad is reported rather than silently stored.
     if (error?.code === "23505") {
-      redirect("/jobs?duplicate=1");
+      redirect("/cockpit/jobs?duplicate=1");
     }
 
     if (error !== null) {
       throw new Error(error.message);
     }
 
-    revalidatePath("/jobs");
-    redirect("/jobs?saved=1");
+    revalidatePath("/cockpit/jobs");
+    redirect("/cockpit/jobs?saved=1");
   }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
       <header className="flex items-baseline justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">Job ads</h1>
-        <Link href="/" className="text-sm text-(--color-accent) underline underline-offset-4">
+        <Link
+          href="/cockpit"
+          className="text-sm text-(--color-accent) underline underline-offset-4"
+        >
           Dashboard
         </Link>
       </header>

@@ -49,7 +49,7 @@ export default async function DocumentsPage() {
 
     if (problems.length > 0 || assembled.sections.length === 0) {
       // typedRoutes models paths, not query strings, so the cast is required.
-      redirect("/documents?blocked=1" as Route);
+      redirect("/cockpit/documents?blocked=1" as Route);
     }
 
     const title = String(formData.get("title") ?? "CV").trim();
@@ -99,15 +99,18 @@ export default async function DocumentsPage() {
       if (sourceError !== null) throw new Error(sourceError.message);
     }
 
-    revalidatePath("/documents");
-    redirect("/documents");
+    revalidatePath("/cockpit/documents");
+    redirect("/cockpit/documents");
   }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
       <header className="flex items-baseline justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">Documents</h1>
-        <Link href="/" className="text-sm text-(--color-accent) underline underline-offset-4">
+        <Link
+          href="/cockpit"
+          className="text-sm text-(--color-accent) underline underline-offset-4"
+        >
           Dashboard
         </Link>
       </header>
