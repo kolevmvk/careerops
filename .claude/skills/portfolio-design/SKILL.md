@@ -58,12 +58,26 @@ is declared for both, and the page has an explicit background in both.
 
 Speed is part of the brief, and it is where animated portfolios usually fail.
 
-| Metric                        | Budget                              |
-| ----------------------------- | ----------------------------------- |
-| LCP                           | under 1.5s on a mid-range phone, 4G |
-| CLS                           | under 0.02                          |
-| INP                           | under 150ms                         |
-| JS shipped to the public page | under 90KB gzipped                  |
+| Metric                             | Budget                              |
+| ---------------------------------- | ----------------------------------- |
+| LCP                                | under 1.5s on a mid-range phone, 4G |
+| CLS                                | under 0.02                          |
+| INP                                | under 150ms                         |
+| Our own JS on top of the framework | under 15KB gzipped                  |
+
+The budget is our code, not the total. Next 16 with React 19 ships roughly
+170KB gzipped on a page with no client component at all, measured against a
+production build - that is the floor of this stack, not something an
+implementation can fix. An earlier version of this file set a 90KB total
+budget without checking that floor, which made it unmeetable by construction.
+
+What is controllable is what we add. The interactive demo, which is the whole
+reason the public page ships any client JavaScript, costs 1.7KB gzipped. If a
+component costs materially more than that, it needs a reason.
+
+Measure against `pnpm start`, never `pnpm dev`: the development server serves
+`next-devtools`, which alone is larger than everything else on the page and
+makes the number meaningless.
 
 Public pages are statically generated and revalidated on a schedule; they never
 render per request. No animation library that costs more than the motion it

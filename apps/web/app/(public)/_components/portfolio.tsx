@@ -4,6 +4,7 @@ import { LOCALES, LOCALE_NAMES, localePath, type Locale } from "@/lib/i18n.ts";
 import { readPublic } from "@/lib/supabase/public.ts";
 
 import { messagesFor } from "../_lib/messages.ts";
+import { SyncDemo } from "./sync-demo.tsx";
 
 export async function loadPortfolio(locale: Locale) {
   return readPublic(
@@ -28,13 +29,21 @@ export async function loadPortfolio(locale: Locale) {
   );
 }
 
+/**
+ * Composition, mobile first.
+ *
+ * The reader decides in about fifteen seconds, usually on a phone. So the
+ * order is: who this is, then proof they can touch, then the work. Motion is
+ * one opening gesture and a single reveal per section - entrances are earned
+ * once and nothing re-animates on scroll-back.
+ */
 export async function Portfolio({ locale }: { locale: Locale }) {
   const t = messagesFor(locale);
   const { profile, facts } = await loadPortfolio(locale);
 
   if (profile === null) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-24">
+      <main className="mx-auto max-w-2xl px-5 py-24">
         <p className="text-sm text-(--color-ink-muted)">{t.nothingPublished}</p>
       </main>
     );
@@ -63,51 +72,78 @@ export async function Portfolio({ locale }: { locale: Locale }) {
   return (
     // `lang` belongs on <html>, which lives in the root layout and cannot see
     // this route's locale without moving every route under a [locale] segment.
-    // Declaring it on the content container is valid and is what assistive
-    // technology reads for this text, but the document default stays English.
-    // Worth revisiting if the cockpit ever moves under a locale segment too.
-    <main lang={locale} className="mx-auto max-w-2xl px-4 py-16">
+    // Assistive technology reads the nearest `lang`, so the text is announced
+    // correctly; the document default stays English.
+    <main lang={locale} className="mx-auto max-w-2xl px-5 pt-20 pb-28 sm:px-6 sm:pt-28">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <header>
-        <h1 className="text-3xl font-semibold tracking-tight text-balance">{profile.full_name}</h1>
+      <header className="rise">
+        <h1 className="text-3xl leading-[1.08] font-semibold sm:text-4xl">{profile.full_name}</h1>
+
         {profile.headline === null ? null : (
-          <p className="mt-2 text-lg text-pretty text-(--color-ink-muted)">{profile.headline}</p>
+          <p className="mt-4 text-lg leading-snug text-(--color-ink-muted) sm:text-xl">
+            {profile.headline}
+          </p>
         )}
-        {profile.summary === null ? null : (
-          <p className="mt-6 leading-relaxed text-pretty">{profile.summary}</p>
-        )}
+
+        <div className="rule mt-8" />
+
+        {profile.summary === null ? null : <p className="mt-8 leading-[1.7]">{profile.summary}</p>}
       </header>
 
+      <SyncDemo strings={t.demo} />
+
       {projects.length > 0 ? (
-        <section className="mt-14">
-          <h2 className="text-sm font-medium tracking-wide text-(--color-ink-muted) uppercase">
+        <section className="reveal mt-28">
+          <h2 className="font-mono text-xs tracking-widest text-(--color-ink-muted) uppercase">
             {t.workHeading}
           </h2>
-          <ul className="mt-5 flex flex-col gap-6">
+
+          <ul className="mt-6 flex flex-col">
             {projects.map((project) => (
-              <li key={project.id}>
-                <h3 className="font-medium">
+              <li
+                key={project.id}
+                className="border-t border-(--color-border-subtle) py-6 first:border-t-0 first:pt-0"
+              >
+                <h3 className="text-lg font-medium">
                   {project.slug === null ? (
                     project.title
                   ) : (
                     <Link
                       href={localePath(locale, `/projects/${project.slug}`)}
-                      className="text-(--color-accent) underline underline-offset-4"
+                      className="underline decoration-(--color-border-strong) underline-offset-4 transition-colors duration-200 hover:text-(--color-accent) hover:decoration-(--color-accent)"
                     >
                       {project.title}
                     </Link>
                   )}
                 </h3>
-                <p className="mt-1 text-sm leading-relaxed text-pretty text-(--color-ink-muted)">
-                  {project.body}
-                </p>
-                {project.is_fallback ? (
-                  <p className="mt-1 text-xs text-(--color-ink-muted)">{t.showingSource}</p>
-                ) : null}
+
+                <p className="mt-2 leading-relaxed text-(--color-ink-muted)">{project.body}</p>
+
+                <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 font-mono text-xs">
+                  {project.live_url === null ? null : (
+                    <a
+                      href={project.live_url}
+                      className="text-(--color-accent) transition-opacity duration-200 hover:opacity-70"
+                    >
+                      {t.liveLink} ↗
+                    </a>
+                  )}
+                  {project.repo_url === null ? null : (
+                    <a
+                      href={project.repo_url}
+                      className="text-(--color-accent) transition-opacity duration-200 hover:opacity-70"
+                    >
+                      {t.sourceLink} ↗
+                    </a>
+                  )}
+                  {project.is_fallback ? (
+                    <span className="text-(--color-ink-faint)">{t.showingSource}</span>
+                  ) : null}
+                </div>
               </li>
             ))}
           </ul>
@@ -115,49 +151,43 @@ export async function Portfolio({ locale }: { locale: Locale }) {
       ) : null}
 
       {highlights.length > 0 ? (
-        <section className="mt-14">
-          <h2 className="text-sm font-medium tracking-wide text-(--color-ink-muted) uppercase">
+        <section className="reveal mt-28">
+          <h2 className="font-mono text-xs tracking-widest text-(--color-ink-muted) uppercase">
             {t.selectedWorkHeading}
           </h2>
-          <ul className="mt-5 flex flex-col gap-3">
+
+          <ul className="mt-6 flex flex-col gap-4">
             {highlights.map((highlight) => (
-              <li key={highlight.id} className="text-sm leading-relaxed text-pretty">
-                {highlight.body}
+              <li key={highlight.id} className="flex gap-4 leading-relaxed">
+                <span aria-hidden className="mt-2.5 h-px w-5 shrink-0 bg-(--color-border-strong)" />
+                <span>{highlight.body}</span>
               </li>
             ))}
           </ul>
         </section>
       ) : null}
 
-      <LocaleSwitcher current={locale} label={t.languageLabel} />
+      <footer className="reveal-soft mt-28">
+        <div className="rule" />
+        <nav aria-label={t.languageLabel} className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          {LOCALES.map((code) =>
+            code === locale ? (
+              <span key={code} aria-current="true" className="text-(--color-ink)">
+                {LOCALE_NAMES[code]}
+              </span>
+            ) : (
+              <Link
+                key={code}
+                href={localePath(code)}
+                hrefLang={code}
+                className="text-(--color-ink-faint) transition-colors duration-200 hover:text-(--color-ink)"
+              >
+                {LOCALE_NAMES[code]}
+              </Link>
+            ),
+          )}
+        </nav>
+      </footer>
     </main>
-  );
-}
-
-/**
- * Plain links, so switching works without JavaScript and each destination is a
- * real cacheable URL. The cookie that remembers the choice is set by the
- * destination page, not here.
- */
-function LocaleSwitcher({ current, label }: { current: Locale; label: string }) {
-  return (
-    <nav aria-label={label} className="mt-20 flex gap-4 text-xs">
-      {LOCALES.map((locale) =>
-        locale === current ? (
-          <span key={locale} aria-current="true" className="text-(--color-ink)">
-            {LOCALE_NAMES[locale]}
-          </span>
-        ) : (
-          <Link
-            key={locale}
-            href={localePath(locale)}
-            hrefLang={locale}
-            className="text-(--color-ink-muted) underline underline-offset-4"
-          >
-            {LOCALE_NAMES[locale]}
-          </Link>
-        ),
-      )}
-    </nav>
   );
 }
