@@ -13,9 +13,10 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:agent": "node --test .claude/hooks/*.test.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm format:check && turbo run lint typecheck test",
+    "check": "pnpm format:check && turbo run lint typecheck test && pnpm test:agent",
     "corpus": "node scripts/corpus-stats.mjs"
   },
   "devDependencies": {

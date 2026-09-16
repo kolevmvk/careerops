@@ -41,3 +41,7 @@ Thumbs.db
 # Next.js build artifacts
 *.tsbuildinfo
 next-env.d.ts
+
+# Personal coding-agent settings (the shared ones in .claude/ are committed)
+CLAUDE.local.md
+.claude/settings.local.json
