@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-15
-- **References:** SPECIFICATION §13
+- **References:** SPECIFICATION §14
 
 ## Context
 
