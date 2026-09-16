@@ -1,3 +1,10 @@
+export {
+  assemble,
+  renderMarkdown,
+  type AssembledDocument,
+  type AssembleOptions,
+} from "./assemble.ts";
+
 export type {
   DisclosureStatus,
   DocumentKind,

@@ -29,9 +29,17 @@ export default async function DashboardPage() {
     <main className="mx-auto max-w-3xl px-4 py-10">
       <header className="flex items-baseline justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">CareerOps</h1>
-        <Link href="/jobs" className="text-sm text-(--color-accent) underline underline-offset-4">
-          Job ads
-        </Link>
+        <nav className="flex gap-4 text-sm">
+          <Link href="/history" className="text-(--color-accent) underline underline-offset-4">
+            History
+          </Link>
+          <Link href="/jobs" className="text-(--color-accent) underline underline-offset-4">
+            Job ads
+          </Link>
+          <Link href="/documents" className="text-(--color-accent) underline underline-offset-4">
+            Documents
+          </Link>
+        </nav>
       </header>
 
       <section className="mt-8 grid grid-cols-3 gap-3">
