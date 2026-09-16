@@ -76,15 +76,12 @@ export function SyncDemo({ strings }: { strings: SyncDemoStrings }) {
   }, [pending, state.server.length, state.online]);
 
   return (
-    <section className="reveal mt-28">
-      <p className="font-mono text-xs tracking-widest text-(--color-accent) uppercase">
-        {strings.eyebrow}
-      </p>
-      <h2 className="mt-3 text-2xl sm:text-3xl">{strings.heading}</h2>
+    <div>
+      <h3 className="text-xl leading-snug sm:text-2xl">{strings.heading}</h3>
       <p className="mt-3 max-w-prose leading-relaxed text-(--color-ink-muted)">{strings.lede}</p>
 
       {/* 44px minimum on every control: this is read and poked on a phone. */}
-      <div className="mt-8 flex flex-wrap items-center gap-2">
+      <div className="mt-7 flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => setState((current) => setOnline(current, !current.online))}
@@ -203,7 +200,7 @@ export function SyncDemo({ strings }: { strings: SyncDemoStrings }) {
       <p aria-live="polite" className="sr-only">
         {announcement}
       </p>
-    </section>
+    </div>
   );
 }
 

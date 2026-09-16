@@ -27,6 +27,11 @@ const PUBLIC_PREFIXES = [
   "/llms.txt",
   "/robots.txt",
   "/sitemap.xml",
+  // The service worker is fetched by the browser without a session. Without it
+  // here the allowlist redirects it to /login, registration fails silently and
+  // the page quietly loses the offline behaviour it claims to have.
+  "/sw.js",
+  "/manifest.webmanifest",
   "/opengraph-image",
   "/icon",
 ];

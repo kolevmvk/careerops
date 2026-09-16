@@ -1,3 +1,4 @@
+import type { ResilienceStrings } from "../_components/resilience-marker.tsx";
 import type { SyncDemoStrings } from "../_components/sync-demo.tsx";
 import type { Locale } from "@/lib/i18n.ts";
 
@@ -19,6 +20,7 @@ export interface Messages {
   nothingPublished: string;
   showingSource: string;
   demo: SyncDemoStrings;
+  resilience: ResilienceStrings;
 }
 
 const MESSAGES: Record<Locale, Messages> = {
@@ -55,6 +57,11 @@ const MESSAGES: Record<Locale, Messages> = {
       ],
       hint: "Tap the same action twice, or cut the network first. The invariants hold either way.",
     },
+    resilience: {
+      ready: "this page is cached — it keeps working without a network",
+      offline: "you are offline, and still reading",
+      pending: "caching this page",
+    },
   },
   de: {
     workHeading: "Arbeit",
@@ -90,6 +97,11 @@ const MESSAGES: Record<Locale, Messages> = {
       ],
       hint: "Zweimal dieselbe Aktion tippen oder vorher das Netz trennen. Die Zusicherungen gelten in beiden Fällen.",
     },
+    resilience: {
+      ready: "diese Seite ist zwischengespeichert — sie funktioniert ohne Netz weiter",
+      offline: "Sie sind offline und lesen trotzdem",
+      pending: "Seite wird zwischengespeichert",
+    },
   },
   sr: {
     workHeading: "Rad",
@@ -124,6 +136,11 @@ const MESSAGES: Record<Locale, Messages> = {
         { label: "Kraj smene", key: "shift-end" },
       ],
       hint: "Kucni istu akciju dvaput, ili prvo prekini mrežu. Garancije važe u oba slučaja.",
+    },
+    resilience: {
+      ready: "ova stranica je keširana — radi i bez mreže",
+      offline: "nema mreže, a i dalje čitaš",
+      pending: "keširam stranicu",
     },
   },
 };
