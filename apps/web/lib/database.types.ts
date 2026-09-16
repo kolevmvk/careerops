@@ -290,6 +290,90 @@ export type Database = {
         };
         Relationships: [];
       };
+      fact_translations: {
+        Row: {
+          approved_at: string | null;
+          body: string;
+          created_at: string;
+          employment_highlight_id: string | null;
+          generator: Database["careerops"]["Enums"]["document_generator"];
+          id: string;
+          locale: string;
+          project_id: string | null;
+          source_hash: string;
+          status: Database["careerops"]["Enums"]["translation_status"];
+          title: string | null;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          approved_at?: string | null;
+          body: string;
+          created_at?: string;
+          employment_highlight_id?: string | null;
+          generator?: Database["careerops"]["Enums"]["document_generator"];
+          id?: string;
+          locale: string;
+          project_id?: string | null;
+          source_hash: string;
+          status?: Database["careerops"]["Enums"]["translation_status"];
+          title?: string | null;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          approved_at?: string | null;
+          body?: string;
+          created_at?: string;
+          employment_highlight_id?: string | null;
+          generator?: Database["careerops"]["Enums"]["document_generator"];
+          id?: string;
+          locale?: string;
+          project_id?: string | null;
+          source_hash?: string;
+          status?: Database["careerops"]["Enums"]["translation_status"];
+          title?: string | null;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "fact_translations_employment_highlight_id_fkey";
+            columns: ["employment_highlight_id"];
+            isOneToOne: false;
+            referencedRelation: "employment_highlights";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "fact_translations_locale_fkey";
+            columns: ["locale"];
+            isOneToOne: false;
+            referencedRelation: "locales";
+            referencedColumns: ["code"];
+          },
+          {
+            foreignKeyName: "fact_translations_locale_fkey";
+            columns: ["locale"];
+            isOneToOne: false;
+            referencedRelation: "public_facts";
+            referencedColumns: ["locale"];
+          },
+          {
+            foreignKeyName: "fact_translations_locale_fkey";
+            columns: ["locale"];
+            isOneToOne: false;
+            referencedRelation: "translation_status_report";
+            referencedColumns: ["locale"];
+          },
+          {
+            foreignKeyName: "fact_translations_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       jobs: {
         Row: {
           company: string;
@@ -391,6 +475,27 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      locales: {
+        Row: {
+          code: string;
+          is_source: boolean;
+          name: string;
+          sort_order: number;
+        };
+        Insert: {
+          code: string;
+          is_source?: boolean;
+          name: string;
+          sort_order?: number;
+        };
+        Update: {
+          code?: string;
+          is_source?: boolean;
+          name?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
       };
       opportunities: {
         Row: {
@@ -874,8 +979,10 @@ export type Database = {
           body: string | null;
           happened_at: string | null;
           id: string | null;
+          is_fallback: boolean | null;
           kind: string | null;
           live_url: string | null;
+          locale: string | null;
           public_slug: string | null;
           repo_url: string | null;
           slug: string | null;
@@ -907,6 +1014,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      published_facts: {
+        Row: {
+          fact_id: string | null;
+          happened_at: string | null;
+          highlight_id: string | null;
+          kind: string | null;
+          live_url: string | null;
+          project_id: string | null;
+          public_slug: string | null;
+          repo_url: string | null;
+          slug: string | null;
+          source_body: string | null;
+          source_title: string | null;
+        };
+        Relationships: [];
+      };
+      translation_status_report: {
+        Row: {
+          fact_id: string | null;
+          kind: string | null;
+          locale: string | null;
+          public_slug: string | null;
+          source_body: string | null;
+          state: string | null;
+          title: string | null;
+          translated_body: string | null;
+          translation_id: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       disclosure_ceiling: {
@@ -917,6 +1054,7 @@ export type Database = {
         Args: { kind: Database["careerops"]["Enums"]["document_kind"] };
         Returns: Database["careerops"]["Enums"]["visibility"];
       };
+      fact_source_hash: { Args: { source_text: string }; Returns: string };
     };
     Enums: {
       code_visibility: "public" | "private" | "employer_owned";
@@ -969,6 +1107,7 @@ export type Database = {
       project_ownership: "sole" | "lead" | "core_contributor" | "contributor";
       remote_policy: "remote" | "hybrid" | "onsite" | "unknown";
       role_tier: "primary" | "bridge" | "stretch" | "fallback";
+      translation_status: "draft" | "approved" | "rejected";
       visibility: "private" | "cv_safe" | "portfolio_public";
     };
     CompositeTypes: {
@@ -1157,6 +1296,7 @@ export const Constants = {
       project_ownership: ["sole", "lead", "core_contributor", "contributor"],
       remote_policy: ["remote", "hybrid", "onsite", "unknown"],
       role_tier: ["primary", "bridge", "stretch", "fallback"],
+      translation_status: ["draft", "approved", "rejected"],
       visibility: ["private", "cv_safe", "portfolio_public"],
     },
   },
