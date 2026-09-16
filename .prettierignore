@@ -1,6 +1,8 @@
 pnpm-lock.yaml
 private/
 docs/
+# Prettier has no SQL parser; migrations and pgTAP tests are formatted by hand.
+**/*.sql
 supabase/.temp/
 .pnpm-store/
 **/dist/

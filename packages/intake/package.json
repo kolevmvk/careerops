@@ -1,0 +1,19 @@
+{
+  "name": "@careerops/intake",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Job ad normalization and dedupe across intake lanes (see docs/SPECIFICATION.md §7)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.5",
+    "vitest": "5.0.1"
+  }
+}

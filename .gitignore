@@ -37,3 +37,7 @@ apps/mobile/build/
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# Next.js build artifacts
+*.tsbuildinfo
+next-env.d.ts

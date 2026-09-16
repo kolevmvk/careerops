@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens.
+ *
+ * The reader is an engineering manager with about fifteen seconds, often on a
+ * phone, often not in their first language. Restraint is not a style choice
+ * here, it is what makes the page legible in that window.
+ *
+ * One typeface, one accent, a tight scale and a lot of space. The expensive
+ * feeling comes from precision and rhythm, not from ornament — the fastest way
+ * to look cheap is to decorate.
+ */
+
+@theme {
+  /* Inter for text, IBM Plex Mono for anything the machine says. Both carry
+     Latin and Cyrillic, which Serbian needs. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* A modular scale, not arbitrary sizes. 1.25 minor third: calm, editorial. */
+  --text-xs: 0.8rem;
+  --text-sm: 0.9rem;
+  --text-base: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.44rem;
+  --text-2xl: 1.8rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 2.81rem;
+  --text-5xl: 3.52rem;
+
+  /* Dark first: this is read in meeting rooms and on phones at night. */
+  --color-surface: oklch(14% 0.008 260);
+  --color-surface-raised: oklch(18% 0.009 260);
+  --color-surface-sunken: oklch(11% 0.007 260);
+  --color-border-subtle: oklch(27% 0.011 260);
+  --color-border-strong: oklch(38% 0.014 260);
+  --color-ink: oklch(96% 0.003 260);
+  --color-ink-muted: oklch(70% 0.012 260);
+  --color-ink-faint: oklch(52% 0.012 260);
+
+  /* One accent. Everything else is ink, muted ink and surface. */
+  --color-accent: oklch(78% 0.14 195);
+  --color-accent-dim: oklch(58% 0.11 195);
+  --color-good: oklch(76% 0.15 150);
+  --color-danger: oklch(70% 0.17 25);
+  --color-warn: oklch(80% 0.14 80);
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  @theme {
+    --color-surface: oklch(99% 0.002 260);
+    --color-surface-raised: oklch(100% 0 0);
+    --color-surface-sunken: oklch(96% 0.003 260);
+    --color-border-subtle: oklch(91% 0.005 260);
+    --color-border-strong: oklch(80% 0.008 260);
+    --color-ink: oklch(19% 0.012 260);
+    --color-ink-muted: oklch(46% 0.014 260);
+    --color-ink-faint: oklch(62% 0.012 260);
+    --color-accent: oklch(52% 0.13 195);
+    --color-accent-dim: oklch(64% 0.1 195);
+    --color-good: oklch(50% 0.13 150);
+    --color-danger: oklch(52% 0.18 25);
+    --color-warn: oklch(58% 0.13 80);
+  }
+}
+
+html {
+  color-scheme: dark light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Inter's optical defaults are loose for display sizes; tighten as type grows. */
+h1,
+h2,
+h3 {
+  font-feature-settings: "ss01", "cv05";
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/*
+ * Scroll-driven reveals with no JavaScript at all.
+ *
+ * `animation-timeline: view()` runs on the compositor, costs nothing, and
+ * degrades to "already visible" in browsers without it — which is the correct
+ * failure, since the content is what matters and the motion is not.
+ *
+ * Entrances are earned once. Nothing re-animates on scroll-back.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 26%;
+    }
+
+    .reveal-soft {
+      animation: reveal-soft linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 30%;
+    }
+  }
+
+  /* A single opening gesture, not a cascade of fades. */
+  .rise {
+    animation: rise-in 900ms var(--ease-out-expo) both;
+  }
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hairline rules that read as precision rather than as borders. */
+.rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--color-border-strong),
+    var(--color-border-subtle) 40%,
+    transparent
+  );
+}

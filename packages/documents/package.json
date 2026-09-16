@@ -1,0 +1,19 @@
+{
+  "name": "@careerops/documents",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Fact selection, templates and the source validator (see docs/SPECIFICATION.md §8)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.5",
+    "vitest": "5.0.1"
+  }
+}
