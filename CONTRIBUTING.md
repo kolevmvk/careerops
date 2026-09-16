@@ -52,4 +52,25 @@ pnpm install    # also fetches the pinned Node version and installs git hooks
 pnpm check      # format, lint, typecheck, test
 ```
 
-Database work (from phase 1) needs Docker for the local Supabase stack.
+Database work (from phase 1) needs Docker for the local Supabase stack. On
+macOS that is Docker Desktop; on Linux the daemon socket may need to be named
+explicitly (`DOCKER_HOST=unix:///var/run/docker.sock`) when Docker Desktop is
+also installed and holds the default context.
+
+### Browser tooling (optional, per machine)
+
+Measuring the public pages - Core Web Vitals, layout at real breakpoints,
+proving nothing loads before consent - needs a real browser rather than a
+static reading of the markup:
+
+```bash
+claude mcp add chrome-devtools --scope local -- pnpm dlx chrome-devtools-mcp@latest
+```
+
+`pnpm dlx` rather than `npx` on purpose: it runs under the Node version pinned
+in `.npmrc`, which is what makes the same command work on macOS and Linux. A
+system Node older than 20.19 will refuse to start the server.
+
+Local scope keeps it out of the repository. It is development tooling, and a
+reader who clones this should not be prompted to run something from the
+network.
