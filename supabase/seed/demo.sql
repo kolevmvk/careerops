@@ -5,13 +5,77 @@
 -- reviewer can click through the system, and so the thin loop has something
 -- to render before any real data is entered.
 
-insert into auth.users (id, email, instance_id, aud, role)
+-- The demo account must actually be able to sign in, because staging runs this
+-- seed and doubles as the public demo (ENVIRONMENTS.md). Inserting only id and
+-- email leaves GoTrue's token columns NULL, which it reads into non-nullable
+-- strings and fails with "Database error loading user".
+--
+-- The password below is deliberately public: it opens a fictional persona on an
+-- instance that holds no real data. Production never runs this seed.
+insert into auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  created_at,
+  updated_at,
+  raw_app_meta_data,
+  raw_user_meta_data,
+  confirmation_token,
+  recovery_token,
+  email_change_token_new,
+  email_change_token_current,
+  email_change,
+  phone_change,
+  phone_change_token,
+  reauthentication_token
+)
 values (
-  '00000000-0000-4000-8000-000000000001',
-  'demo@careerops.invalid',
   '00000000-0000-0000-0000-000000000000',
+  '00000000-0000-4000-8000-000000000001',
   'authenticated',
-  'authenticated'
+  'authenticated',
+  'demo@careerops.invalid',
+  extensions.crypt('careerops-demo', extensions.gen_salt('bf')),
+  now(),
+  now(),
+  now(),
+  '{"provider": "email", "providers": ["email"]}'::jsonb,
+  '{"full_name": "Dana Present"}'::jsonb,
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  ''
+)
+on conflict (id) do nothing;
+
+-- Password sign-in needs a matching identity for the email provider.
+insert into auth.identities (
+  id,
+  user_id,
+  provider_id,
+  identity_data,
+  provider,
+  last_sign_in_at,
+  created_at,
+  updated_at
+)
+values (
+  '00000000-0000-4000-8000-000000000002',
+  '00000000-0000-4000-8000-000000000001',
+  '00000000-0000-4000-8000-000000000001',
+  '{"sub": "00000000-0000-4000-8000-000000000001", "email": "demo@careerops.invalid", "email_verified": true, "phone_verified": false}'::jsonb,
+  'email',
+  now(),
+  now(),
+  now()
 )
 on conflict (id) do nothing;
 
