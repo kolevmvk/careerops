@@ -17,3 +17,5 @@ Decisions that are expensive to change later. Format: context, decision, consequ
 | [0011](0011-local-ai-through-a-pull-model-worker.md) | Local AI through a pull-model worker | Accepted |
 | [0012](0012-public-code-private-data.md) | Public code, private data | Accepted |
 | [0013](0013-branching-model-release-process-and-environments.md) | Branching model, release process and environments | Accepted |
+| [0014](0014-agent-facing-surface.md) | Agent-facing surface over public facts | Accepted |
+| [0015](0015-job-intake-lanes-and-email-ingestion-boundary.md) | Job intake lanes and the email ingestion boundary | Accepted |

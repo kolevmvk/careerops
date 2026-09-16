@@ -1,13 +1,29 @@
-# CareerOps — Project Specification v1.1
+# CareerOps — Project Specification v1.2
 
 **Personal career intelligence and execution system**
 
-Status: architecture and implementation blueprint · Date: 2026-09-15 · Supersedes: v1.0 (PDF, same date)
+Status: architecture and implementation blueprint · Date: 2026-09-16 · Supersedes: v1.1 (2026-09-15), v1.0 (PDF)
 Detailed contracts: [DOMAIN.md](DOMAIN.md) (entities, invariants) · [SCORING.md](SCORING.md) (formulas)
 
 ---
 
-## 0. What changed from v1.0
+## 0. What changed
+
+### 0.1 From v1.1 to v1.2
+
+v1.1 modeled the career data well but scheduled the two capabilities that are the product — finding roles and producing targeted documents — behind the machinery that makes them smarter. Ads arrived only by paste, and the system had no surface that a machine could query. v1.2 corrects the order and adds a third client.
+
+| Area | v1.1 | v1.2 | Why |
+|---|---|---|---|
+| Job intake | Paste and URL only; ATS adapters in v0.2 | **Three lanes in v0.1**: public ATS APIs, job-alert email in the user's own mailbox, paste/URL fallback (§7) | Paste is recording, not finding. Volume is the bottleneck, and the legal lanes deliver it. |
+| Platform integration | Not modeled | Alert email is the **compliance layer** for platforms that forbid automated access; no credentialed access to any job platform (§7.2) | LinkedIn, Indeed and similar prohibit automation and enforce it. Reading one's own inbox does not. |
+| Funnel events | Manual entry | Email ingestion proposes `opportunity_events`; the user confirms (§7.3) | Manual event logging stops within weeks, so O2 never gets its funnel data. |
+| AI layer | v0.2, optional enhancement | **v0.1 carrier** for extraction, email triage and drafts; still fully optional at runtime (§9) | The deterministic core stays authoritative, but the useful paths now assume a provider exists. |
+| Clients | Web cockpit, Android companion | Adds an **agent-facing surface** (§13): MCP server plus machine-readable public facts | The party searching is increasingly an agent. A document optimized for a human reader is not retrievable by one. |
+| Outbound profiles | Not modeled | One source of truth generates every platform profile; the user pastes them (§13.4) | Consistency across platforms is what AI sourcing actually reads today. |
+| Data classes | 4 | Adds `third_party_correspondence` (§10.1) | Recruiter mail is personal data belonging to other people and needs its own rule. |
+
+### 0.2 From v1.0 to v1.1
 
 v1.0 was reviewed against its own review brief (section 31) and against two further inputs: a professional positioning plan and market research on a shipped workforce product. The main changes:
 
@@ -51,6 +67,8 @@ canonical profile → verified evidence → skill model → real market demand (
 → explainable gaps → roadmap → projects and labs → stronger evidence
 → targeted documents → opportunities → outcome and terms feedback
 ```
+
+The same verified facts feed three surfaces: the human reader (documents), the operator (cockpit and companion) and **the machine reader** (§13). A fact is written once, cleared for a visibility level once, and every surface is bound by that clearance.
 
 If this loop works, automation is useful. If it does not, scraping, agents and visual polish only automate a weak model.
 
@@ -101,11 +119,14 @@ Concrete target roles, weights, compensation floors and organization lists are *
 - Skill catalog with aliases and hierarchy; user skill state and assessments
 - Projects (product families, IP ownership, decisions, competitive benchmarks) and evidence with visibility and disclosure
 - Target roles with compensation floors
-- Job import by paste or URL, deterministic requirement extraction, review queue for unmapped phrases
+- **Job intake on three lanes** (§7): public ATS APIs, job-alert email ingestion, paste or URL; deterministic requirement extraction, review queue for unmapped phrases
 - Scoring snapshots: effective level, confidence, market frequency, job match with constraint gate, gap priority, readiness
 - Organizations with need hypothesis, need signals and employer tier; contacts (including role hypotheses)
 - Opportunities (job ad or outreach) with events, terms and terms gate
+- **Email ingestion** (§7.3): read-only mailbox access, proposed opportunity events, user confirmation
 - Documents from verified facts via templates: CV, LinkedIn profile, case study, pitch, one-pager, integration brief; frozen when sent
+- **Agent-facing surface** (§13): `public_facts` projection, JSON-LD and `llms.txt` output, read-only MCP server over `portfolio_public` facts
+- **Platform profile generation** (§13.4): one source of truth renders LinkedIn, Infostud, Joberty, Wellfound and GitHub profile text for manual pasting
 - Roadmap items with evidence-based definition of done; tasks with focus selection
 - Learning resources linked to skills
 - PWA share target for quick capture of jobs, evidence and notes from a phone
@@ -114,10 +135,10 @@ Concrete target roles, weights, compensation floors and organization lists are *
 ### 4.2 v0.2
 
 - Flutter Android companion (§12)
-- AI provider interface, local Ollama worker, optional cloud provider (§9)
-- ATS adapters (Greenhouse, Lever, Ashby, Workable public job APIs)
+- Cloud AI provider as an alternative to the local worker (§9)
 - Public portfolio site and public demo instance
 - Funnel dashboards per track
+- `assess_fit` on the agent surface (§13.3), once scoring has enough real ads behind it
 
 ### 4.3 Later
 
@@ -130,6 +151,8 @@ Concrete target roles, weights, compensation floors and organization lists are *
 - Multi-user SaaS or team features
 - Automatic application or outreach submission
 - Mass scraping or LinkedIn automation
+- **Credentialed or automated access to any job platform**: no stored platform passwords or session cookies, no headless browser acting as the user, no automated profile edits or connection requests (§7.2)
+- **Unsolicited push to third-party agents**: the agent surface answers when called and never injects itself into someone else's system (§13.5)
 - Gamification
 - AI-generated claims that cannot be traced to verified facts
 - Storing operational details of restricted employment, even as private data
@@ -143,21 +166,29 @@ flowchart LR
     subgraph Clients
         W[Next.js web cockpit<br/>+ PWA share target]
         M[Flutter Android companion<br/>v0.2]
+        AG[Agent surface<br/>MCP · JSON-LD · llms.txt]
+    end
+    subgraph Sources
+        ATS[Public ATS APIs<br/>Greenhouse · Lever<br/>Ashby · Workable]
+        MBX[(Own mailbox<br/>IMAP read-only)]
     end
     subgraph Supabase
         DB[(Postgres<br/>RLS · triggers · pg_cron)]
         AUTH[Auth]
         ST[Storage<br/>private / public buckets]
         WH[Database webhooks]
+        PF[[public_facts view<br/>portfolio_public only]]
     end
     subgraph Vercel
         API[Server routes<br/>scoring · extraction · documents]
+        MCP[MCP server<br/>read-only]
     end
     subgraph Home server on tailnet
-        AIW[AI worker container<br/>v0.2]
+        AIW[AI worker container]
+        MW[Mail worker container]
         OL[Ollama]
     end
-    CP[Cloud AI provider<br/>optional, v0.2]
+    CP[Cloud AI provider<br/>optional]
     BK[(Encrypted backups<br/>S3)]
 
     W --> API
@@ -166,12 +197,21 @@ flowchart LR
     M --> API
     WH --> API
     API --> DB
+    ATS -- scheduled pull --> API
+    MW -- IMAP read-only --> MBX
+    MW -- proposed events --> DB
+    MW --> OL
     AIW -- pulls pending ai_analyses --> DB
     AIW --> OL
     AIW -.-> CP
+    AG --> MCP
+    MCP --> PF
+    PF --> DB
     GH[GitHub Actions] --> BK
     GH --> DB
 ```
+
+Three properties hold across the diagram. Every inbound lane writes into one `job_ads` table with the same dedupe rule. The mail worker runs on the tailnet, not on Vercel, because correspondence must not leave the local boundary by default. The MCP server reads `public_facts` and nothing else, so it cannot reach private rows even if compromised.
 
 ### 5.1 Technology baseline
 
@@ -181,7 +221,10 @@ flowchart LR
 | Backend | Supabase (Postgres, Auth, Storage, RLS, webhooks, `pg_cron`) | EU region |
 | Domain logic | `packages/scoring`, `packages/extraction`, `packages/documents` (TypeScript, pure) | Single implementation of business rules |
 | Mobile | Flutter (v0.2) | Reads snapshots; mutations that need recomputation go through API routes |
-| AI | Provider interface; local worker with Ollama over Tailscale; optional cloud provider (v0.2) | Never a hard dependency |
+| AI | Provider interface; local worker with Ollama over Tailscale; optional cloud provider | Never a hard dependency |
+| Job intake | `packages/intake`: ATS API clients, mail parsers, normalizer | One `job_ads` shape from every lane |
+| Mail | `services/mail-worker`: IMAP read-only, runs on the tailnet | Correspondence is processed locally by default |
+| Agent surface | `services/mcp`: read-only MCP server over `public_facts`; JSON-LD and `llms.txt` generated at build time | No write tools, no private reads |
 | Hosting | Vercel + Supabase | Low operational burden |
 | Infrastructure as code | Terraform (Vercel, Supabase and AWS providers) | Environments, backup bucket, IAM |
 | CI/CD | GitHub Actions with OIDC to AWS | No long-lived cloud keys |
@@ -265,12 +308,41 @@ high-value gaps and `prove` gaps
 
 ## 7. Job ingestion
 
-- **Paste** is the primary path and always works.
-- **URL**: store the link and try a server-side fetch with readability extraction. On failure (dynamic page, block, login wall) ask for a paste. No crawling and no retries against blocks.
-- **Share intent**: from a phone browser to the PWA share target (v0.1) or the Android app (v0.2).
-- **ATS adapters** (v0.2): public job-board APIs of common applicant tracking systems return structured postings legally and reliably.
-- **Deduplication**: `url_hash` and normalized `content_hash`.
-- **Corpus first**: start collecting real target ads from week one, even as raw text. By the time extraction exists there should be 20–30 real fixtures, and market analysis needs them anyway.
+Volume is the constraint the pipeline exists to relieve. Intake therefore runs on three lanes that all normalize into one `job_ads` table, deduplicated on `url_hash` and normalized `content_hash`.
+
+### 7.1 The three lanes
+
+| Lane | Mechanism | Coverage | Status |
+|---|---|---|---|
+| **A · ATS APIs** | Scheduled pull from public job-board endpoints of Greenhouse, Lever, Ashby and Workable, per tracked organization | Where postings originate; structured and reliable | v0.1, primary |
+| **B · Alert email** | Job-alert messages delivered to the user's own mailbox, parsed per sender template | LinkedIn, Indeed, Infostud, HelloWorld, Joberty and any board offering alerts | v0.1, primary |
+| **C · Paste or URL** | Manual paste, server-side fetch with readability extraction, PWA share target | Anything the first two miss | v0.1, fallback |
+
+Lane A is pulled per organization, so it stays inside `organizations` and never becomes a crawler. Lane C tries one server-side fetch; on a dynamic page, a block or a login wall it asks for a paste. No crawling, no retries against blocks.
+
+### 7.2 Why email is the compliance layer
+
+The major job platforms prohibit automated access in their terms of use and enforce it against accounts. CareerOps therefore holds **no platform credentials, no session cookies and no headless browser** (§4.4), and does not read those platforms directly.
+
+It reads the user's own mailbox instead. Alert email is content the platform chose to send to its recipient, and processing one's own correspondence needs no permission from the platform. The coverage is nearly identical to what direct access would give, because alerts are generated from the same postings. The lane is legitimate, durable and cannot get an account suspended.
+
+This is a deliberate trade: less structure than an API, in exchange for reaching the platforms that matter without violating their terms or risking the user's most valuable channel.
+
+### 7.3 What email ingestion may do
+
+The mail worker runs on the tailnet with **read-only** IMAP scope. It classifies each message into one of three kinds and never sends, replies, deletes or marks anything.
+
+| Kind | Extracted | Written |
+|---|---|---|
+| Job alert | Postings inside the message | `job_ads` rows via the normalizer |
+| Recruiter or process mail | Organization, role, stage, stated terms, requested action | A **proposed** `opportunity_event`, `status = suggested` |
+| Everything else | Nothing | Ignored and not stored |
+
+Proposals require user confirmation before they affect the pipeline, funnel metrics or any document. The worker suggests; the operator decides. Message bodies are processed locally through Ollama by default and a cloud provider is used only if the user turns it on for this class explicitly (§10.1).
+
+### 7.4 Corpus first
+
+Start collecting real target ads from week one, even as raw text, before any extraction code exists. By the time extraction lands there should be 20–30 real fixtures, and market analysis needs them anyway. This is the one intake activity with no engineering prerequisite, and phase 0 does not exit without it.
 
 ---
 
@@ -287,7 +359,9 @@ high-value gaps and `prove` gaps
 
 ---
 
-## 9. AI layer (v0.2)
+## 9. AI and agent layer
+
+Promoted from v0.2 to v0.1. The deterministic core (§9.3) remains authoritative and the product still works with every provider disabled, but the paths that create daily value — extraction from messy ad text, mail triage, document wording — now assume a provider is normally present.
 
 ### 9.1 Interface
 
@@ -298,10 +372,12 @@ interface AIProvider {
   suggestEvidenceMappings(input: EvidenceSummary): Promise<MappingSuggestion[]>;
   draftHighlights(input: VerifiedFacts): Promise<DraftWithSources>;
   explainScore(input: ScoreBreakdown): Promise<string>;
+  classifyMessage(input: MailText): Promise<MailClassification>;
+  proposeReply(input: MailThread & VerifiedFacts): Promise<DraftWithSources>;
 }
 ```
 
-All outputs are validated against JSON schemas and the skill catalog before they are shown.
+All outputs are validated against JSON schemas and the skill catalog before they are shown. `proposeReply` returns a draft only; nothing in the system sends mail (§4.4).
 
 ### 9.2 Local worker (pull model)
 
@@ -315,13 +391,19 @@ Vercel and Supabase functions cannot reach a Tailscale network. The server write
 
 It never holds a service-role key.
 
+The **mail worker** is a second container on the same tailnet with the same shape and a narrower grant: read-only IMAP outward, and inward only the right to insert `job_ads` and `suggested` opportunity events. It holds no service-role key and cannot read career data beyond what a proposal needs for matching.
+
 ### 9.3 Stays deterministic
 
 Alias matching, scoring, gap priority, market frequency, visibility filtering, fact selection for documents, funnel metrics and reminders.
 
 ### 9.4 May use an LLM
 
-Requirement extraction from messy text (after dictionary pass), alias suggestions, evidence mapping suggestions, wording drafts with sources, plain-language explanations of breakdowns.
+Requirement extraction from messy text (after dictionary pass), alias suggestions, evidence mapping suggestions, wording drafts with sources, plain-language explanations of breakdowns, mail classification and reply drafts.
+
+### 9.5 Never
+
+No provider may send a message, submit an application, change a platform profile, alter factual career history, mark evidence verified, or emit a claim without a source reference that survives the §8 validator. These are enforced at the boundary, not by prompt instruction, because a prompt is not a control.
 
 ---
 
@@ -332,9 +414,12 @@ Requirement extraction from messy text (after dictionary pass), alias suggestion
 | Class | Examples | Handling |
 |---|---|---|
 | Restricted source | Operational details of sensitive employment | **Never stored.** Only the abstraction is written. |
+| Third-party correspondence | Recruiter and hiring-manager email: names, addresses, signatures, message bodies | Local processing by default; extracted fields kept, raw bodies retained 90 days then purged; never rendered into any public surface or document; never sent to a cloud provider unless explicitly enabled for this class |
 | Private | Contacts, terms, organization research, unverified evidence, private evidence files | RLS; private bucket; excluded from AI unless `ai_allowed` |
 | Professional (`cv_safe`) | CV-grade highlights, approved project summaries | Documents sent to organizations |
-| Public (`portfolio_public`) | Approved case studies, articles, public repositories | Statically generated portfolio |
+| Public (`portfolio_public`) | Approved case studies, articles, public repositories | Statically generated portfolio **and the agent surface (§13)** |
+
+Third-party correspondence is the only class describing people who are not the user and who never agreed to be in this system. It is therefore minimized on intake: the worker keeps the fields a pipeline event needs and discards the rest, rather than archiving mailboxes.
 
 ### 10.2 Controls
 
@@ -395,7 +480,53 @@ Notifications cover the selected task, follow-ups due, interviews and deadlines.
 
 ---
 
-## 13. Repository structure
+## 13. Agent-facing surface
+
+### 13.1 Why
+
+Sourcing increasingly runs through software rather than a person reading a document. A CV is optimized for a human eye and an ATS keyword match; neither makes the underlying facts *queryable*. The same verified facts that produce a CV can be exposed in a form a machine can retrieve, filter and cite.
+
+This surface is built on an honest premise: **almost nobody sources candidates over MCP today.** It is not justified by expected inbound traffic. It is justified because the user's own agent needs a grounded source of truth about them, because machine-readable public facts are what retrieval-based search actually reads, and because building it is itself evidence of the integration skills the target roles ask for. If it ever becomes a sourcing channel, the surface is already there.
+
+### 13.2 What is exposed
+
+Only `portfolio_public` facts, through a dedicated `public_facts` view. The existing visibility ordering and disclosure ceiling (DOMAIN §5) are the access control; this section adds no new clearance mechanism and no exception to the old one. A fact that is not cleared for the public portfolio is not reachable here, by any tool, in any mode.
+
+| Output | Form | Refresh |
+|---|---|---|
+| Structured profile | JSON-LD `Person` with `knowsAbout`, `hasCredential`, `subjectOf` | Build time |
+| Crawler map | `llms.txt` and sitemap pointing at curated markdown | Build time |
+| Queryable interface | MCP server (§13.3) | Live, read-only |
+
+### 13.3 MCP tools
+
+| Tool | Returns | Availability |
+|---|---|---|
+| `search_evidence(skill, min_level?)` | Public evidence for a capability, each row with `source_ref` | v0.1 |
+| `get_project(id)` | Public project summary: problem, decisions, stack, `ip_owner`, verified links | v0.1 |
+| `list_capabilities()` | Public skills with effective level and confidence band | v0.1 |
+| `assess_fit(job_text)` | Match summary, honest gaps, relevant evidence | v0.2, after §7 has real ads behind the scoring |
+
+Every tool is read-only. There are no write tools, no contact tools and no tool that reveals terms, floors, contacts, organization research or pipeline state.
+
+### 13.4 Platform profile generation
+
+Direct platform automation is excluded (§4.4, §7.2), so the outbound path is generation, not posting. From one source of truth the system renders profile text per destination — LinkedIn headline and About, Infostud, Joberty, Wellfound, GitHub bio — through the same §8 guardrails as any document. The user pastes it.
+
+The value is consistency: five profiles saying the same true thing, updated together, is a stronger and more retrievable signal for AI-assisted sourcing than a queryable endpoint nobody calls yet.
+
+### 13.5 Guardrails
+
+The agent surface is an untrusted input boundary in both directions.
+
+- **Injection.** `job_text` and every other free-text argument is data, never instruction. Tool output passes the §8 source validator unchanged: any number, date or proper name absent from the sources is rejected before it leaves the process. A caller cannot talk the surface into a claim the documents would refuse to make.
+- **Pull only.** The surface answers when called. It never posts, messages, registers itself or injects into another party's system (§4.4).
+- **Rate and disclosure.** Anonymous reads are rate-limited per address and logged to `audit_log` with the tool name and argument hash, never the raw argument. Volume is observable without retaining what strangers typed.
+- **No inference about people.** The surface answers about the user only. It does not accept, store or reason about third parties supplied by a caller.
+
+---
+
+## 14. Repository structure
 
 ```
 careerops/
@@ -405,10 +536,13 @@ careerops/
 ├── packages/
 │   ├── scoring/                pure TS, SCORING_VERSION, golden tests
 │   ├── extraction/             alias dictionary, requirement parser, fixtures
+│   ├── intake/                 ATS clients, mail parsers, job_ads normalizer
 │   ├── documents/              fact selection, templates, source validator
-│   └── ai/                     provider interface and schemas (v0.2)
+│   └── ai/                     provider interface and schemas
 ├── services/
-│   └── ai-worker/              Dockerfile, pull-queue worker (v0.2)
+│   ├── ai-worker/              Dockerfile, pull-queue worker
+│   ├── mail-worker/            Dockerfile, IMAP read-only, proposal writer
+│   └── mcp/                    read-only MCP server over public_facts
 ├── supabase/
 │   ├── migrations/
 │   ├── tests/                  pgTAP RLS and invariant tests
@@ -428,7 +562,7 @@ pnpm workspaces and Turborepo for the TypeScript side; Flutter is managed with i
 
 ---
 
-## 14. The repository as professional evidence
+## 15. The repository as professional evidence
 
 CareerOps is itself evidence for the target roles. Each engineering practice below is real, inspectable and linked to the matching skill in the system.
 
@@ -440,13 +574,16 @@ CareerOps is itself evidence for the target roles. Each engineering practice bel
 | RLS with tests, visibility ceiling triggers, threat model | Application and data security |
 | Nightly encrypted `pg_dump` and storage sync to S3; monthly automated restore drill | Backup, recovery, operations |
 | Containerized AI worker on a tailnet with a scoped database role | Docker, networking, zero-trust access |
+| Read-only MCP server with injection guardrails and a source validator on the output path | AI integration, agent-facing API design, secure tool boundaries |
+| Third-party ATS API clients and mail parsers normalizing into one schema | Integration engineering, data normalization |
+| Compliance-driven intake design: no credentialed platform access, documented in an ADR | Engineering judgment under legal constraint |
 | Structured logs, error tracking, AI latency metrics | Observability |
 | ADRs and versioned scoring | Architecture communication |
 | Public demo instance with a fictional persona | Delivery, privacy by design |
 
 ---
 
-## 15. Testing (highest return first)
+## 16. Testing (highest return first)
 
 1. **RLS and invariants** (pgTAP): another user and anon see nothing; visibility ceiling; freeze rules; I12.
 2. **Scoring golden tests and property tests** (SCORING §12).
@@ -458,7 +595,7 @@ CareerOps is itself evidence for the target roles. Each engineering practice bel
 
 ---
 
-## 16. Operations
+## 17. Operations
 
 - **Migrations** only through the Supabase CLI in git; no dashboard schema edits; drift check in CI.
 - **Backups**: nightly encrypted database dump plus storage sync; retention 30 daily and 12 monthly; restore drill monthly. Free-tier projects pause when inactive and have no point-in-time recovery, so the backup job also keeps the project active and checks health.
@@ -468,34 +605,41 @@ CareerOps is itself evidence for the target roles. Each engineering practice bel
 
 ---
 
-## 17. Implementation phases
+## 18. Implementation phases
 
 | Phase | Deliverable | Exit criterion |
 |---|---|---|
-| 0 · Foundation | Repository, docs, ADRs, CI skeleton with gitleaks; **job ad corpus collection starts** | Domain agreed; CI green; ads are being collected |
+| 0 · Foundation | Repository, docs, ADRs, CI skeleton with gitleaks; **job ad corpus collection starts** | Domain agreed; CI green; **20+ real ads collected as raw text** |
 | 1 · Data | Migrations, RLS, invariant triggers, pgTAP tests, demo seed, private seed | Real career data stored safely; tests prove isolation and ceilings |
-| 2 · Proof | Career history, skills, evidence, projects; complex product family modeled end to end | DOMAIN §8 is fully represented and verified |
-| 3 · Market | Job import, extraction, review queue, scoring snapshots | 10+ real ads produce explainable matches and ranked gaps |
-| 4 · Opportunities and documents | Organizations, opportunities, terms gate, CV, LinkedIn, pitch, one-pager, integration brief | A real opportunity is pursued with frozen, truthful documents |
-| 5 · Execution | Roadmap, tasks, learning | Gaps turn into evidence-producing work |
-| 6 · Platform | Terraform, OIDC, backups, restore drill, observability, threat model | The system is recoverable, and the repository stands as DevOps evidence |
-| 7 · Companion | Flutter Android app | Daily actions and capture work from the phone |
-| 8 · AI | Provider interface, local worker, optional cloud provider | Enhancements work and the product still works with AI off |
-| 9 · Public | Demo instance, portfolio site | A reviewer can explore the system without real data |
+| 2 · Thin loop | Minimal career history and projects; paste intake; template CV and pitch with the §8 validator; opportunities with events | **One real application goes out of the system, end to end, with a frozen document** |
+| 3 · Intake at volume | ATS API clients, mail worker, normalizer, dedupe, extraction, review queue | Ads arrive without manual entry; 50+ ads in the corpus from lanes A and B |
+| 4 · Proof and scoring | Full skills, evidence and benchmarks; scoring snapshots | DOMAIN §8 represented; ads produce explainable matches and ranked gaps |
+| 5 · Organizations and outreach | Organizations, need hypotheses, employer tier, terms gate, company-specific documents | Outreach runs from the system with funnel data per track |
+| 6 · Agent surface | `public_facts`, JSON-LD, `llms.txt`, MCP server, platform profile generation | A third-party agent can query public evidence; profiles regenerate from one source |
+| 7 · Execution | Roadmap, tasks, learning | Gaps turn into evidence-producing work |
+| 8 · Platform | Terraform, OIDC, backups, restore drill, observability, threat model | The system is recoverable, and the repository stands as DevOps evidence |
+| 9 · Companion and public | Flutter Android app, demo instance, portfolio site | Capture works from the phone; a reviewer explores the system without real data |
 
-Phases 4 and 6 can overlap. Opportunities come before execution on purpose: the system must produce career outcomes early, or it becomes another unfinished project.
+**Phase 2 is the change that matters.** In v1.1 the first real career output arrived in phase 4, behind the data model, the proof model and the market model. It now arrives second, on a deliberately thin slice: a CV can be tailored from a career-history table without a scoring engine. Scoring makes the output smarter; it is not what makes it work. Everything after phase 2 improves a loop that already runs.
+
+Phase 3 comes before scoring because scoring is worthless without a corpus, and phase 6 comes after documents because the agent surface exposes the same facts the documents already clear. Phases 5 and 8 can overlap.
+
+Every phase must produce a career output. A phase that produces only internal machinery is a phase that has drifted.
 
 ---
 
-## 18. Definition of done for v0.1
+## 19. Definition of done for v0.1
 
 - The real profile and career history are seeded, editable and verified.
 - 20–30 meaningful skills, including transferable practices, have assessed and target levels.
 - Major projects, including at least one complex product family, are mapped to evidence with verified links.
 - Visibility and disclosure ceilings are enforced and tested.
-- At least 10 real target ads are imported, with explainable matches and a ranked demand view.
+- At least 50 real target ads are imported, the majority through lanes A and B without manual entry.
 - At least 5 organizations are researched, with opportunities carrying angle, fit and terms.
 - Targeted CV, LinkedIn profile and pitch documents are generated from verified facts only, and frozen on send.
+- **At least 10 real applications or outreach messages have left the system**, each with a frozen document version and recorded events.
+- Email ingestion proposes opportunity events, and no proposal has ever changed the pipeline without confirmation.
+- The agent surface answers `search_evidence`, `get_project` and `list_capabilities` over public facts only, and an injection attempt against it fails the source validator in a test.
 - A 90-day roadmap exists as tasks with evidence-based definitions of done.
 - The core product works with AI disabled.
 - RLS, backup and a restore drill are verified.
@@ -503,7 +647,7 @@ Phases 4 and 6 can overlap. Opportunities come before execution on purpose: the 
 
 ---
 
-## 19. Risks and countermeasures
+## 20. Risks and countermeasures
 
 | Risk | Countermeasure |
 |---|---|
@@ -521,17 +665,26 @@ Phases 4 and 6 can overlap. Opportunities come before execution on purpose: the 
 | Noisy job corpus | Target role filters, relevance rating, minimum sample |
 | Local AI unavailable | AI optional; queue simply waits |
 | Opaque scoring | Versioned formulas, visible breakdowns, golden tests |
+| **Platform terms violation or account suspension** | No credentialed or automated platform access (§4.4); intake through public APIs and the user's own mailbox (§7.2); recorded in ADR-0015 |
+| **Third-party personal data in recruiter mail** | Own data class (§10.1), local processing by default, field minimization on intake, 90-day raw-body purge, never rendered into public surfaces |
+| **Prompt injection through the agent surface** | Free-text arguments treated as data; §8 source validator applied to tool output; read-only tools; no third-party inference (§13.5) |
+| **Agent surface mistaken for a sourcing channel** | Justified as own-agent grounding and portfolio evidence (§13.1), not by expected inbound traffic; consistent platform profiles (§13.4) carry the discovery load |
+| **Automation drifts into acting for the user** | No provider may send, submit or edit a profile (§9.5); enforced at the boundary, not by prompt |
 
 ---
 
-## 20. Decisions and remaining input
+## 21. Decisions and remaining input
 
 | # | Decision | Resolution | Rationale |
 |---|---|---|---|
 | O1 | Rights to present the shipped product | The owner controls the repository and signing keys. Architecture, decisions, own role and a sanitized showcase repository may be public. Before labeling the work "independent", the IP clause of the employment or engagement contract is checked and the result recorded in `projects.ip_owner`. Customer data and customer names are never shown. | Unblocks a public showcase without overstating legal ownership |
 | O2 | Primary positioning axis | **Proof-led: integration and edge systems**, with infrastructure and operations as the differentiating supporting axis; reviewed on funnel data after 8 weeks | The goal is to be hired as someone who has already built what the employer needs |
-| O3 | Compensation floors | **Owner input still required**; until set, the terms gate reports `unknown` | Numbers cannot be derived from documents |
+| O3 | Compensation floors | **Resolved by O9** (2026-09-16); the terms gate no longer reports `unknown` | Numbers cannot be derived from documents; they needed owner input |
 | O4 | Product names in public documentation | Product names allowed (already public through store listings and professional profile); employer names stay out of the public repository | Showcase value without exposing employer relationships |
 | O5 | Android companion timing | v0.2 as proposed | Mobile delivery is already proven by the shipped product; v0.1 must produce career outcomes first |
+| O6 | Job platform integration | **No credentialed or automated access.** Intake through public ATS APIs and the user's own mailbox. | The platforms prohibit automation and enforce it; the compliant lane reaches the same postings (ADR-0015) |
+| O7 | Agent surface scope | **Read-only over `portfolio_public` facts**, pull only, no write or contact tools | Justified as agent grounding and portfolio evidence, not as a traffic channel (ADR-0014) |
+| O8 | Mail processing location | **Local worker on the tailnet by default**; cloud provider only if explicitly enabled for `third_party_correspondence` | Correspondence contains other people's personal data |
+| O9 | Compensation floor | **3.000 € / month** at 20–25 h/week; a full-time engagement is evaluated at the same effective rate, not the same monthly figure | Owner input, 2026-09-16; resolves the `unknown` state O3 left in the terms gate |
 
 Decisions are recorded as ADRs in `docs/adr/`.
