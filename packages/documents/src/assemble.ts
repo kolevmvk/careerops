@@ -86,3 +86,19 @@ export function renderMarkdown(document: AssembledDocument, title: string): stri
 function titleCase(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+/**
+ * Sentence-aware join, mirroring `careerops.join_sentences` in the database.
+ *
+ * Joining fact fields with ". " doubles the separator whenever a field already
+ * ends in punctuation, which most of them do. The result reads as a typo in a
+ * CV and on the public portfolio, and it is the kind of detail a reader
+ * notices without being able to say why the page felt careless.
+ */
+export function joinSentences(...parts: (string | null | undefined)[]): string {
+  return parts
+    .map((part) => part?.trim() ?? "")
+    .filter((part) => part !== "")
+    .map((part) => (/[.!?:]$/.test(part) ? part : `${part}.`))
+    .join(" ");
+}

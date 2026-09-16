@@ -51,6 +51,12 @@ export default async function DashboardPage() {
           >
             Pipeline
           </Link>
+          <Link
+            href="/cockpit/translations"
+            className="text-(--color-accent) underline underline-offset-4"
+          >
+            Translations
+          </Link>
         </nav>
       </header>
 

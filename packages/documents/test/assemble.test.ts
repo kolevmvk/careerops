@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { assemble, renderMarkdown } from "../src/assemble.ts";
+import { assemble, joinSentences, renderMarkdown } from "../src/assemble.ts";
 import type { SourceFact } from "../src/types.ts";
 import { validateSections } from "../src/validator.ts";
 
@@ -129,5 +129,37 @@ describe("renderMarkdown", () => {
   it("renders an empty document without crashing", () => {
     const markdown = renderMarkdown({ sections: [], excluded: [] }, "Empty");
     expect(markdown.trim()).toBe("# Empty");
+  });
+});
+
+describe("joinSentences", () => {
+  it("does not double punctuation a field already carries", () => {
+    expect(joinSentences("Events are lost.", "A durable queue fixes it.")).toBe(
+      "Events are lost. A durable queue fixes it.",
+    );
+  });
+
+  it("adds a full stop where one is missing", () => {
+    expect(joinSentences("Events are lost", "A durable queue fixes it")).toBe(
+      "Events are lost. A durable queue fixes it.",
+    );
+  });
+
+  it("respects other terminal punctuation", () => {
+    expect(joinSentences("Why does it fail?", "Because the queue is not durable")).toBe(
+      "Why does it fail? Because the queue is not durable.",
+    );
+  });
+
+  it("skips empty, null and whitespace-only parts", () => {
+    expect(joinSentences("Only this", null, undefined, "   ", "")).toBe("Only this.");
+  });
+
+  it("returns an empty string when there is nothing to join", () => {
+    expect(joinSentences(null, undefined, "  ")).toBe("");
+  });
+
+  it("trims surrounding whitespace", () => {
+    expect(joinSentences("  Spaced out.  ", " And another ")).toBe("Spaced out. And another.");
   });
 });

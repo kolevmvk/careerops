@@ -11,6 +11,33 @@
 
 set search_path = careerops, public;
 
+-- Joins fact fields into prose. `concat_ws('. ', ...)` doubles the separator
+-- whenever a field already ends in punctuation, which it usually does, and the
+-- result is visible on the public portfolio.
+create function join_sentences(variadic parts text[]) returns text
+language sql
+immutable
+parallel safe
+as $$
+  select nullif(
+    trim(
+      string_agg(
+        case
+          when right(trim(part), 1) in ('.', '!', '?', ':') then trim(part)
+          else trim(part) || '.'
+        end,
+        ' '
+      )
+    ),
+    ''
+  )
+  from unnest(parts) as part
+  where part is not null and trim(part) <> '';
+$$;
+
+comment on function join_sentences(text[]) is
+  'Sentence-aware join: adds terminal punctuation only where it is missing.';
+
 drop view if exists public_facts;
 
 -- The published set, once. Not granted to anon: it is the input to the two
@@ -26,7 +53,7 @@ select
   null::uuid as highlight_id,
   pr.name as source_title,
   pr.slug,
-  concat_ws('. ', pr.problem, pr.solution, pr.result) as source_body,
+  join_sentences(pr.problem, pr.solution, pr.result) as source_body,
   pr.repo_url,
   pr.live_url,
   pr.started_at as happened_at

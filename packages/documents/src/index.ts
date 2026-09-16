@@ -1,5 +1,6 @@
 export {
   assemble,
+  joinSentences,
   renderMarkdown,
   type AssembledDocument,
   type AssembleOptions,

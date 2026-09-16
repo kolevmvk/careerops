@@ -1,4 +1,4 @@
-import type { SourceFact } from "@careerops/documents";
+import { joinSentences, type SourceFact } from "@careerops/documents";
 
 import { createClient } from "@/lib/supabase/server.ts";
 
@@ -33,9 +33,7 @@ export async function loadFacts(): Promise<SourceFact[]> {
     facts.push({
       id: employment.id,
       kind: "employment",
-      text: [employment.title, employment.organization, employment.summary]
-        .filter((part): part is string => part !== null && part !== "")
-        .join(". "),
+      text: joinSentences(employment.title, employment.organization, employment.summary),
       visibility: employment.visibility,
       disclosureStatus: employment.disclosure_status,
       // An employment row is a record of fact, not a claim awaiting review.
@@ -66,9 +64,7 @@ export async function loadFacts(): Promise<SourceFact[]> {
     facts.push({
       id: project.id,
       kind: "project",
-      text: [project.name, project.problem, project.solution, project.result]
-        .filter((part): part is string => part !== null && part !== "")
-        .join(". "),
+      text: joinSentences(project.name, project.problem, project.solution, project.result),
       visibility: project.visibility,
       disclosureStatus: project.disclosure_status,
       verified: true,
