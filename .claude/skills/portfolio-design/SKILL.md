@@ -58,12 +58,12 @@ is declared for both, and the page has an explicit background in both.
 
 Speed is part of the brief, and it is where animated portfolios usually fail.
 
-| Metric | Budget |
-|---|---|
-| LCP | under 1.5s on a mid-range phone, 4G |
-| CLS | under 0.02 |
-| INP | under 150ms |
-| JS shipped to the public page | under 90KB gzipped |
+| Metric                        | Budget                              |
+| ----------------------------- | ----------------------------------- |
+| LCP                           | under 1.5s on a mid-range phone, 4G |
+| CLS                           | under 0.02                          |
+| INP                           | under 150ms                         |
+| JS shipped to the public page | under 90KB gzipped                  |
 
 Public pages are statically generated and revalidated on a schedule; they never
 render per request. No animation library that costs more than the motion it

@@ -48,7 +48,7 @@ Every Supabase client must name the schema explicitly, or it silently targets
 `public` and finds nothing:
 
 ```ts
-createServerClient<Database>(url, key, { db: { schema: "careerops" } })
+createServerClient<Database>(url, key, { db: { schema: "careerops" } });
 ```
 
 Over REST the equivalent headers are `Accept-Profile` and `Content-Profile`.

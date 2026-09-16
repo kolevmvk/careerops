@@ -31,11 +31,11 @@ session cookie for a signed-in owner, a CSRF token, the consent record itself.
 Offer them separately, default every optional one to off, and make rejecting as
 easy as accepting - one click, same prominence.
 
-| Category | Contents | Default |
-|---|---|---|
-| `necessary` | Consent record, session, CSRF | always on, not a choice |
-| `analytics` | Page views, events, duration, referrer | off |
-| `marketing` | Anything shared with a third party for targeting | off |
+| Category    | Contents                                         | Default                 |
+| ----------- | ------------------------------------------------ | ----------------------- |
+| `necessary` | Consent record, session, CSRF                    | always on, not a choice |
+| `analytics` | Page views, events, duration, referrer           | off                     |
+| `marketing` | Anything shared with a third party for targeting | off                     |
 
 ## The consent record
 

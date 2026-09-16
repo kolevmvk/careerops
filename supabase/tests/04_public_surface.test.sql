@@ -63,20 +63,20 @@ values
 -- publishes facts, and a test that assumes an empty database is a test that
 -- breaks the moment the seed grows.
 select is(
-  (select count(*) from public_facts where kind = 'project' and public_slug = 'owner')::int, 1,
+  (select count(*) from public_facts where kind = 'project' and public_slug = 'owner' and locale = 'en')::int, 1,
   'only the portfolio_public project appears'
 );
 select is(
-  (select title from public_facts where kind = 'project' and public_slug = 'owner'),
+  (select title from public_facts where kind = 'project' and public_slug = 'owner' and locale = 'en'),
   'Published Project',
   'and it is the right one'
 );
 select is(
-  (select count(*) from public_facts where kind = 'highlight' and public_slug = 'owner')::int, 1,
+  (select count(*) from public_facts where kind = 'highlight' and public_slug = 'owner' and locale = 'en')::int, 1,
   'only the verified published highlight appears'
 );
 select is(
-  (select body from public_facts where kind = 'highlight' and public_slug = 'owner'),
+  (select body from public_facts where kind = 'highlight' and public_slug = 'owner' and locale = 'en'),
   'Verified and published.',
   'the unverified one is absent (DOMAIN I5)'
 );
@@ -102,7 +102,7 @@ select lives_ok(
   'anon can read the public profile view'
 );
 select results_eq(
-  $$select count(*)::int from public_facts where public_slug = 'owner'$$,
+  $$select count(*)::int from public_facts where public_slug = 'owner' and locale = 'en'$$,
   array[2],
   'anon sees exactly the two published facts for this profile'
 );
