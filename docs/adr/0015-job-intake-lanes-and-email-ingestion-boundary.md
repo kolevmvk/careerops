@@ -14,7 +14,7 @@ Separately, recruiter correspondence carries personal data belonging to people w
 
 ## Decision
 
-**Three intake lanes, all normalizing into one `job_ads` table** with dedupe on `url_hash` and normalized `content_hash`:
+**Three intake lanes, all normalizing into one `jobs` table** with dedupe on `url_hash` and normalized `content_hash`:
 
 | Lane | Mechanism | Role |
 |---|---|---|
@@ -29,7 +29,7 @@ Separately, recruiter correspondence carries personal data belonging to people w
 **Email ingestion boundary.** The mail worker (`services/mail-worker`) runs on the tailnet alongside the AI worker (ADR-0011), with:
 
 - read-only IMAP scope; it never sends, replies, deletes or marks
-- inward grants limited to inserting `job_ads` rows and `suggested` opportunity events
+- inward grants limited to inserting `jobs` rows and `suggested` opportunity events
 - no service-role key, and no read access to career data beyond what matching needs
 - local processing through Ollama by default; a cloud provider only if explicitly enabled for the `third_party_correspondence` class
 - field minimization on intake: extracted fields are kept, raw bodies are purged after 90 days, and nothing is archived wholesale

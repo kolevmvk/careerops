@@ -211,7 +211,7 @@ flowchart LR
     GH --> DB
 ```
 
-Three properties hold across the diagram. Every inbound lane writes into one `job_ads` table with the same dedupe rule. The mail worker runs on the tailnet, not on Vercel, because correspondence must not leave the local boundary by default. The MCP server reads `public_facts` and nothing else, so it cannot reach private rows even if compromised.
+Three properties hold across the diagram. Every inbound lane writes into one `jobs` table with the same dedupe rule. The mail worker runs on the tailnet, not on Vercel, because correspondence must not leave the local boundary by default. The MCP server reads `public_facts` and nothing else, so it cannot reach private rows even if compromised.
 
 ### 5.1 Technology baseline
 
@@ -222,7 +222,7 @@ Three properties hold across the diagram. Every inbound lane writes into one `jo
 | Domain logic | `packages/scoring`, `packages/extraction`, `packages/documents` (TypeScript, pure) | Single implementation of business rules |
 | Mobile | Flutter (v0.2) | Reads snapshots; mutations that need recomputation go through API routes |
 | AI | Provider interface; local worker with Ollama over Tailscale; optional cloud provider | Never a hard dependency |
-| Job intake | `packages/intake`: ATS API clients, mail parsers, normalizer | One `job_ads` shape from every lane |
+| Job intake | `packages/intake`: ATS API clients, mail parsers, normalizer | One `jobs` shape from every lane |
 | Mail | `services/mail-worker`: IMAP read-only, runs on the tailnet | Correspondence is processed locally by default |
 | Agent surface | `services/mcp`: read-only MCP server over `public_facts`; JSON-LD and `llms.txt` generated at build time | No write tools, no private reads |
 | Hosting | Vercel + Supabase | Low operational burden |
@@ -308,7 +308,7 @@ high-value gaps and `prove` gaps
 
 ## 7. Job ingestion
 
-Volume is the constraint the pipeline exists to relieve. Intake therefore runs on three lanes that all normalize into one `job_ads` table, deduplicated on `url_hash` and normalized `content_hash`.
+Volume is the constraint the pipeline exists to relieve. Intake therefore runs on three lanes that all normalize into one `jobs` table, deduplicated on `url_hash` and normalized `content_hash`.
 
 ### 7.1 The three lanes
 
@@ -334,7 +334,7 @@ The mail worker runs on the tailnet with **read-only** IMAP scope. It classifies
 
 | Kind | Extracted | Written |
 |---|---|---|
-| Job alert | Postings inside the message | `job_ads` rows via the normalizer |
+| Job alert | Postings inside the message | `jobs` rows via the normalizer |
 | Recruiter or process mail | Organization, role, stage, stated terms, requested action | A **proposed** `opportunity_event`, `status = suggested` |
 | Everything else | Nothing | Ignored and not stored |
 
@@ -391,7 +391,7 @@ Vercel and Supabase functions cannot reach a Tailscale network. The server write
 
 It never holds a service-role key.
 
-The **mail worker** is a second container on the same tailnet with the same shape and a narrower grant: read-only IMAP outward, and inward only the right to insert `job_ads` and `suggested` opportunity events. It holds no service-role key and cannot read career data beyond what a proposal needs for matching.
+The **mail worker** is a second container on the same tailnet with the same shape and a narrower grant: read-only IMAP outward, and inward only the right to insert `jobs` and `suggested` opportunity events. It holds no service-role key and cannot read career data beyond what a proposal needs for matching.
 
 ### 9.3 Stays deterministic
 
@@ -536,7 +536,7 @@ careerops/
 ├── packages/
 │   ├── scoring/                pure TS, SCORING_VERSION, golden tests
 │   ├── extraction/             alias dictionary, requirement parser, fixtures
-│   ├── intake/                 ATS clients, mail parsers, job_ads normalizer
+│   ├── intake/                 ATS clients, mail parsers, jobs normalizer
 │   ├── documents/              fact selection, templates, source validator
 │   └── ai/                     provider interface and schemas
 ├── services/
