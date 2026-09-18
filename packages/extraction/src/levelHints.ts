@@ -6,7 +6,10 @@ const SENIORITY_LEVEL: Array<{ pattern: RegExp; level: number }> = [
   { pattern: /\b(expert|architect)\b/i, level: 5 },
 ];
 
-const YEARS_PATTERN = /(\d+)\+?\s*(?:years?|yrs?)\b/i;
+// Digits bounded to 3 (nobody requires 1000+ years): an unbounded `\d+`
+// ahead of the optional `+`/whitespace groups is a polynomial-ReDoS shape
+// on attacker-controlled ad text (CodeQL js/polynomial-redos).
+const YEARS_PATTERN = /(\d{1,3})\+?\s?(?:years?|yrs?)\b/i;
 
 /** Years of experience → a 0–5 level, roughly doubling every level. */
 function levelFromYears(years: number): number {

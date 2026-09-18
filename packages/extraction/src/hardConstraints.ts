@@ -57,7 +57,10 @@ export function extractLanguageConstraints(text: string): HardConstraintRequirem
   return results;
 }
 
-const YEARS_PATTERN = /(\d+)\+?\s*(?:years?|yrs?)\s+(?:of\s+)?experience\b/gi;
+// Digits bounded to 3, same reasoning as packages/extraction/src/levelHints.ts:
+// unbounded `\d+` here is a polynomial-ReDoS shape on attacker-controlled ad
+// text (CodeQL js/polynomial-redos).
+const YEARS_PATTERN = /(\d{1,3})\+?\s?(?:years?|yrs?)\s+(?:of\s+)?experience\b/gi;
 
 /** `experience_years` hard constraints (docs/SCORING.md §5.3). Numeric, so no manual mapping is needed. */
 export function extractExperienceYearsConstraints(text: string): HardConstraintRequirement[] {
