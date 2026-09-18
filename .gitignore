@@ -37,3 +37,4 @@ apps/mobile/build/
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+.claude/
