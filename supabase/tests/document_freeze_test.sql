@@ -8,51 +8,51 @@ insert into auth.users (id) values ('11111111-1111-1111-1111-111111111111');
 set local role authenticated;
 set local "request.jwt.claim.sub" to '11111111-1111-1111-1111-111111111111';
 
-insert into public.documents (user_id, kind, title)
+insert into careerops.documents (user_id, kind, title)
 values ('11111111-1111-1111-1111-111111111111', 'cv', 'Freeze Test CV');
 
-insert into public.document_versions (user_id, document_id, version, rendered_md)
+insert into careerops.document_versions (user_id, document_id, version, rendered_md)
 select '11111111-1111-1111-1111-111111111111', id, 1, 'draft content'
-from public.documents where title = 'Freeze Test CV';
+from careerops.documents where title = 'Freeze Test CV';
 
 select is(
-  (select status::text from public.document_versions where document_id = (select id from public.documents where title = 'Freeze Test CV')),
+  (select status::text from careerops.document_versions where document_id = (select id from careerops.documents where title = 'Freeze Test CV')),
   'draft',
   'a new document version starts as draft'
 );
 
-insert into public.opportunities (user_id, track, origin, title)
+insert into careerops.opportunities (user_id, track, origin, title)
 values ('11111111-1111-1111-1111-111111111111', 'employment', 'outreach', 'Freeze Test Opportunity');
 
-insert into public.opportunity_documents (user_id, opportunity_id, document_version_id, role)
+insert into careerops.opportunity_documents (user_id, opportunity_id, document_version_id, role)
 select
   '11111111-1111-1111-1111-111111111111',
-  (select id from public.opportunities where title = 'Freeze Test Opportunity'),
-  (select id from public.document_versions where document_id = (select id from public.documents where title = 'Freeze Test CV')),
+  (select id from careerops.opportunities where title = 'Freeze Test Opportunity'),
+  (select id from careerops.document_versions where document_id = (select id from careerops.documents where title = 'Freeze Test CV')),
   'cv';
 
 select is(
-  (select status::text from public.document_versions where document_id = (select id from public.documents where title = 'Freeze Test CV')),
+  (select status::text from careerops.document_versions where document_id = (select id from careerops.documents where title = 'Freeze Test CV')),
   'frozen',
   'linking a document version to an opportunity freezes it (I3)'
 );
 
 select isnt(
-  (select frozen_at from public.document_versions where document_id = (select id from public.documents where title = 'Freeze Test CV')),
+  (select frozen_at from careerops.document_versions where document_id = (select id from careerops.documents where title = 'Freeze Test CV')),
   null,
   'frozen_at is set once frozen'
 );
 
 select throws_ok(
-  $$ update public.document_versions set rendered_md = 'changed'
-     where document_id = (select id from public.documents where title = 'Freeze Test CV') $$,
+  $$ update careerops.document_versions set rendered_md = 'changed'
+     where document_id = (select id from careerops.documents where title = 'Freeze Test CV') $$,
   'P0001'::char(5), null,
   'a frozen document version rejects update (I2)'
 );
 
 select throws_ok(
-  $$ delete from public.document_versions
-     where document_id = (select id from public.documents where title = 'Freeze Test CV') $$,
+  $$ delete from careerops.document_versions
+     where document_id = (select id from careerops.documents where title = 'Freeze Test CV') $$,
   'P0001'::char(5), null,
   'a frozen document version rejects delete (I2)'
 );

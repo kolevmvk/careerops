@@ -50,7 +50,7 @@ insert into auth.identities (
 -- 4.1 Career history
 -- ============================================================================
 
-insert into public.profiles (
+insert into careerops.profiles (
   user_id, full_name, headline, summary, location, timezone,
   remote_preference, open_to_relocation, work_authorization, public_slug
 ) values (
@@ -64,7 +64,7 @@ insert into public.profiles (
   'elena-voss-demo'
 );
 
-insert into public.employments (
+insert into careerops.employments (
   user_id, organization, title, employment_type, start_date, end_date,
   location, summary, visibility, disclosure_status, ai_allowed
 ) values
@@ -93,38 +93,38 @@ insert into public.employments (
     'cv_safe', 'not_required', true
   );
 
-insert into public.employment_highlights (user_id, employment_id, text, visibility, verified_at, sort_order)
-select '99999999-9999-9999-9999-999999999999', id, h.text, h.visibility::public.visibility, h.verified_at, h.sort_order
-from public.employments,
+insert into careerops.employment_highlights (user_id, employment_id, text, visibility, verified_at, sort_order)
+select '99999999-9999-9999-9999-999999999999', id, h.text, h.visibility::careerops.visibility, h.verified_at, h.sort_order
+from careerops.employments,
   lateral (values
     ('Migrated the platform team''s edge fleet from a single-region to a multi-region Kubernetes rollout, cutting update lead time from days to hours.', 'portfolio_public', now() - interval '60 days', 1),
     ('Introduced Terraform-managed infrastructure across all environments, replacing manual cloud console changes.', 'portfolio_public', now() - interval '90 days', 2)
   ) as h(text, visibility, verified_at, sort_order)
 where organization = 'GridWorks Energy GmbH';
 
-insert into public.employment_highlights (user_id, employment_id, text, visibility, verified_at, sort_order)
-select '99999999-9999-9999-9999-999999999999', id, h.text, h.visibility::public.visibility, h.verified_at, h.sort_order
-from public.employments,
+insert into careerops.employment_highlights (user_id, employment_id, text, visibility, verified_at, sort_order)
+select '99999999-9999-9999-9999-999999999999', id, h.text, h.visibility::careerops.visibility, h.verified_at, h.sort_order
+from careerops.employments,
   lateral (values
     ('Set up CI/CD pipelines for 6 client projects, reducing average deploy time from 45 minutes to under 5.', 'portfolio_public', now() - interval '400 days', 1)
   ) as h(text, visibility, verified_at, sort_order)
 where organization = 'Open Source Foundry';
 
-insert into public.employment_highlights (user_id, employment_id, text, visibility, sort_order)
+insert into careerops.employment_highlights (user_id, employment_id, text, visibility, sort_order)
 select '99999999-9999-9999-9999-999999999999', id, 'Provided infrastructure consulting under NDA; details withheld per client agreement.', 'cv_safe', 1
-from public.employments where organization = 'Confidential Public-Sector Engagement';
+from careerops.employments where organization = 'Confidential Public-Sector Engagement';
 
-insert into public.education (user_id, institution, program, degree, start_date, end_date, date_precision, visibility)
+insert into careerops.education (user_id, institution, program, degree, start_date, end_date, date_precision, visibility)
 values
   ('99999999-9999-9999-9999-999999999999', 'Technical University of Berlin', 'Computer Science', 'BSc', '2014-10-01', '2018-07-01', 'month', 'cv_safe'),
   ('99999999-9999-9999-9999-999999999999', 'Open University', 'Cloud Native Systems (non-degree)', null, '2022-01-01', '2022-06-01', 'month', 'cv_safe');
 
-insert into public.credentials (user_id, name, issuer, status, issued_at, expires_at, credential_url, visibility)
+insert into careerops.credentials (user_id, name, issuer, status, issued_at, expires_at, credential_url, visibility)
 values
   ('99999999-9999-9999-9999-999999999999', 'AWS Certified Solutions Architect - Associate', 'Amazon Web Services', 'earned', '2022-05-15', '2025-05-15', 'https://www.credly.com/badges/demo-aws-csaa', 'cv_safe'),
   ('99999999-9999-9999-9999-999999999999', 'Certified Kubernetes Administrator', 'CNCF', 'in_progress', null, null, null, 'cv_safe');
 
-insert into public.languages (user_id, language, proficiency) values
+insert into careerops.languages (user_id, language, proficiency) values
   ('99999999-9999-9999-9999-999999999999', 'en', 'native'),
   ('99999999-9999-9999-9999-999999999999', 'de', 'b2');
 
@@ -132,7 +132,7 @@ insert into public.languages (user_id, language, proficiency) values
 -- 4.2 Skill catalog and user skill state
 -- ============================================================================
 
-insert into public.skill_categories (user_id, name) values
+insert into careerops.skill_categories (user_id, name) values
   ('99999999-9999-9999-9999-999999999999', 'Cloud'),
   ('99999999-9999-9999-9999-999999999999', 'DevOps'),
   ('99999999-9999-9999-9999-999999999999', 'Linux'),
@@ -142,9 +142,9 @@ insert into public.skill_categories (user_id, name) values
   ('99999999-9999-9999-9999-999999999999', 'Databases'),
   ('99999999-9999-9999-9999-999999999999', 'Automation');
 
-insert into public.skills (user_id, name, slug, kind, category_id)
-select '99999999-9999-9999-9999-999999999999', s.name, s.slug, s.kind::public.skill_kind, c.id
-from public.skill_categories c
+insert into careerops.skills (user_id, name, slug, kind, category_id)
+select '99999999-9999-9999-9999-999999999999', s.name, s.slug, s.kind::careerops.skill_kind, c.id
+from careerops.skill_categories c
 join lateral (values
   ('Cloud', 'AWS', 'aws', 'platform'),
   ('Cloud', 'Terraform', 'terraform', 'technology'),
@@ -166,13 +166,13 @@ join lateral (values
 ) as s(category, name, slug, kind) on s.category = c.name
 where c.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.skills (user_id, name, slug, kind, category_id, parent_id)
+insert into careerops.skills (user_id, name, slug, kind, category_id, parent_id)
 select '99999999-9999-9999-9999-999999999999', 'IAM', 'iam', 'platform', category_id, id
-from (select category_id, id from public.skills where slug = 'aws') as aws;
+from (select category_id, id from careerops.skills where slug = 'aws') as aws;
 
-insert into public.skill_aliases (user_id, skill_id, alias, normalized)
+insert into careerops.skill_aliases (user_id, skill_id, alias, normalized)
 select '99999999-9999-9999-9999-999999999999', sk.id, a.alias, a.normalized
-from public.skills sk
+from careerops.skills sk
 join lateral (values
   ('aws', 'Amazon Web Services', 'amazon web services'),
   ('ci-cd', 'Continuous Integration', 'continuous integration'),
@@ -180,9 +180,9 @@ join lateral (values
 ) as a(skill_slug, alias, normalized) on a.skill_slug = sk.slug
 where sk.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.user_skills (user_id, skill_id, target_level, status, feasibility)
-select '99999999-9999-9999-9999-999999999999', id, u.target_level, u.status::public.skill_status, u.feasibility::public.skill_feasibility
-from public.skills,
+insert into careerops.user_skills (user_id, skill_id, target_level, status, feasibility)
+select '99999999-9999-9999-9999-999999999999', id, u.target_level, u.status::careerops.skill_status, u.feasibility::careerops.skill_feasibility
+from careerops.skills,
   lateral (values
     ('aws', 5, 'active', 'high'),
     ('iam', 4, 'active', 'high'),
@@ -205,10 +205,10 @@ from public.skills,
   ) as u(slug, target_level, status, feasibility)
 where skills.slug = u.slug;
 
-insert into public.skill_assessments (user_id, user_skill_id, assessed_level, method, rationale)
-select '99999999-9999-9999-9999-999999999999', us.id, a.assessed_level, a.method::public.skill_assessment_method, a.rationale
-from public.user_skills us
-join public.skills sk on sk.id = us.skill_id
+insert into careerops.skill_assessments (user_id, user_skill_id, assessed_level, method, rationale)
+select '99999999-9999-9999-9999-999999999999', us.id, a.assessed_level, a.method::careerops.skill_assessment_method, a.rationale
+from careerops.user_skills us
+join careerops.skills sk on sk.id = us.skill_id
 join lateral (values
   ('aws', 4, 'evidence_review', 'Multi-account production infrastructure managed for 3+ years.'),
   ('iam', 3, 'evidence_review', 'Designed cross-account IAM roles for the platform team.'),
@@ -235,32 +235,32 @@ where us.user_id = '99999999-9999-9999-9999-999999999999';
 -- 4.4 Learning
 -- ============================================================================
 
-insert into public.learning_resources (user_id, title, provider, type, status, progress_percent, started_at, completed_at)
+insert into careerops.learning_resources (user_id, title, provider, type, status, progress_percent, started_at, completed_at)
 values
   ('99999999-9999-9999-9999-999999999999', 'Kubernetes the Hard Way', 'Kelsey Hightower (self-hosted)', 'course', 'completed', 100, '2021-04-01', '2021-05-01'),
   ('99999999-9999-9999-9999-999999999999', 'HashiCorp Terraform Associate Path', 'HashiCorp Learn', 'certification_path', 'active', 60, '2026-06-01', null),
   ('99999999-9999-9999-9999-999999999999', 'Designing Data-Intensive Applications', 'O''Reilly', 'book', 'completed', 100, '2020-01-01', '2020-03-01');
 
-insert into public.learning_resource_skills (user_id, learning_resource_id, skill_id, relevance)
+insert into careerops.learning_resource_skills (user_id, learning_resource_id, skill_id, relevance)
 select '99999999-9999-9999-9999-999999999999', lr.id, sk.id, x.relevance
-from public.learning_resources lr
+from careerops.learning_resources lr
 join lateral (values
   ('Kubernetes the Hard Way', 'kubernetes', 3),
   ('HashiCorp Terraform Associate Path', 'terraform', 3),
   ('Designing Data-Intensive Applications', 'postgresql', 2),
   ('Designing Data-Intensive Applications', 'observability', 2)
 ) as x(title, skill_slug, relevance) on x.title = lr.title
-join public.skills sk on sk.slug = x.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999';
+join careerops.skills sk on sk.slug = x.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.credentials (user_id, name, issuer, status, visibility, learning_resource_id)
+insert into careerops.credentials (user_id, name, issuer, status, visibility, learning_resource_id)
 select '99999999-9999-9999-9999-999999999999', 'HashiCorp Certified: Terraform Associate', 'HashiCorp', 'planned', 'cv_safe', id
-from public.learning_resources where title = 'HashiCorp Terraform Associate Path';
+from careerops.learning_resources where title = 'HashiCorp Terraform Associate Path';
 
 -- ============================================================================
 -- 4.3 Projects, decisions, benchmarks, evidence
 -- ============================================================================
 
-insert into public.projects (
+insert into careerops.projects (
   user_id, name, slug, employment_id, kind, role, ownership, problem, solution, result,
   operational_status, started_at, ip_owner, code_visibility, repo_url, visibility, disclosure_status
 )
@@ -271,27 +271,27 @@ select
   'An edge gateway that normalizes telemetry from mixed-vendor inverters and a mobile app that presents it in real time, feeding a cloud ingestion API.',
   'Rolled out to 2,000+ residential sites across 3 countries with 99.9% gateway uptime.',
   'production', '2021-06-01', 'employer', 'employer_owned', null, 'portfolio_public', 'approved'
-from public.employments where organization = 'GridWorks Energy GmbH';
+from careerops.employments where organization = 'GridWorks Energy GmbH';
 
-insert into public.projects (
+insert into careerops.projects (
   user_id, name, slug, parent_project_id, employment_id, kind, role, ownership,
   operational_status, started_at, ip_owner, code_visibility, visibility, disclosure_status
 )
 select '99999999-9999-9999-9999-999999999999', 'GreenGrid Home', 'greengrid-home', p.id, p.employment_id,
   'product', 'Core contributor (mobile + API integration)', 'core_contributor',
   'production', '2021-08-01', 'employer', 'employer_owned', 'portfolio_public', 'approved'
-from public.projects p where p.slug = 'greengrid-platform';
+from careerops.projects p where p.slug = 'greengrid-platform';
 
-insert into public.projects (
+insert into careerops.projects (
   user_id, name, slug, parent_project_id, employment_id, kind, role, ownership,
   operational_status, started_at, ip_owner, code_visibility, visibility, disclosure_status
 )
 select '99999999-9999-9999-9999-999999999999', 'GreenGrid Gateway', 'greengrid-gateway', p.id, p.employment_id,
   'infrastructure', 'Platform lead (edge fleet)', 'lead',
   'production', '2021-06-01', 'employer', 'employer_owned', 'portfolio_public', 'approved'
-from public.projects p where p.slug = 'greengrid-platform';
+from careerops.projects p where p.slug = 'greengrid-platform';
 
-insert into public.projects (
+insert into careerops.projects (
   user_id, name, slug, kind, role, ownership, problem, solution, result,
   operational_status, started_at, ip_owner, code_visibility, repo_url, visibility, disclosure_status
 ) values (
@@ -304,9 +304,9 @@ insert into public.projects (
   'portfolio_public', 'not_required'
 );
 
-insert into public.project_decisions (user_id, project_id, title, context, decision, alternatives, consequences, decided_at, visibility)
+insert into careerops.project_decisions (user_id, project_id, title, context, decision, alternatives, consequences, decided_at, visibility)
 select '99999999-9999-9999-9999-999999999999', id, d.title, d.context, d.decision, d.alternatives, d.consequences, d.decided_at::date, 'portfolio_public'
-from public.projects,
+from careerops.projects,
   lateral (values
     (
       'Edge buffering strategy for intermittent connectivity',
@@ -327,83 +327,83 @@ from public.projects,
   ) as d(title, context, decision, alternatives, consequences, decided_at)
 where slug = 'greengrid-platform';
 
-insert into public.evidence (user_id, type, title, description, project_id, occurred_from, occurred_to, verified_at, visibility)
-select '99999999-9999-9999-9999-999999999999', 'production_deployment'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, project_id, occurred_from, occurred_to, verified_at, visibility)
+select '99999999-9999-9999-9999-999999999999', 'production_deployment'::careerops.evidence_type,
   'GreenGrid Gateway fleet rollout (2,000+ sites)',
   'Rolled the edge gateway out across residential sites in 3 countries, coordinating firmware updates in staged waves.',
   id, '2022-01-01', null, now() - interval '45 days', 'portfolio_public'
-from public.projects where slug = 'greengrid-gateway';
+from careerops.projects where slug = 'greengrid-gateway';
 
-insert into public.evidence (user_id, type, title, description, project_id, occurred_from, verified_at, visibility)
-select '99999999-9999-9999-9999-999999999999', 'design_document'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, project_id, occurred_from, verified_at, visibility)
+select '99999999-9999-9999-9999-999999999999', 'design_document'::careerops.evidence_type,
   'Edge buffering & offline sync design',
   'Design document for the gateway''s local buffering and replay-on-reconnect strategy.',
   id, '2021-09-10', now() - interval '50 days', 'portfolio_public'
-from public.projects where slug = 'greengrid-platform';
+from careerops.projects where slug = 'greengrid-platform';
 
-insert into public.evidence (user_id, type, title, description, project_id, occurred_from, occurred_to, verified_at, visibility)
-select '99999999-9999-9999-9999-999999999999', 'incident_record'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, project_id, occurred_from, occurred_to, verified_at, visibility)
+select '99999999-9999-9999-9999-999999999999', 'incident_record'::careerops.evidence_type,
   'Regional gateway connectivity outage postmortem',
   'Postmortem for a regional ISP outage that affected gateway reporting for ~6 hours; buffering prevented data loss.',
   id, '2023-03-11', '2023-03-11', now() - interval '80 days', 'cv_safe'
-from public.projects where slug = 'greengrid-gateway';
+from careerops.projects where slug = 'greengrid-gateway';
 
-insert into public.evidence (user_id, type, title, description, project_id, occurred_from, verified_at, visibility)
-select '99999999-9999-9999-9999-999999999999', 'release'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, project_id, occurred_from, verified_at, visibility)
+select '99999999-9999-9999-9999-999999999999', 'release'::careerops.evidence_type,
   'GreenGrid Home v3.0 multi-vendor release',
   'Shipped multi-vendor inverter support in the mobile app, the top-requested feature from installer partners.',
   id, '2023-06-01', now() - interval '70 days', 'portfolio_public'
-from public.projects where slug = 'greengrid-home';
+from careerops.projects where slug = 'greengrid-home';
 
-insert into public.evidence (user_id, type, title, description, occurred_from, verified_at, visibility)
+insert into careerops.evidence (user_id, type, title, description, occurred_from, verified_at, visibility)
 values (
   '99999999-9999-9999-9999-999999999999', 'certification', 'AWS Certified Solutions Architect - Associate',
   'Certification exam covering AWS architecture, security and cost fundamentals.',
   '2022-05-15', now() - interval '200 days', 'cv_safe'
 );
 
-insert into public.evidence (user_id, type, title, description, project_id, url, occurred_from, verified_at, visibility)
-select '99999999-9999-9999-9999-999999999999', 'repository'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, project_id, url, occurred_from, verified_at, visibility)
+select '99999999-9999-9999-9999-999999999999', 'repository'::careerops.evidence_type,
   'pgshield public repository',
   'Open-source CLI for auditing Postgres Row Level Security coverage.',
   id, 'https://example.invalid/elena-voss-demo/pgshield', '2023-02-01', now() - interval '30 days', 'portfolio_public'
-from public.projects where slug = 'pgshield';
+from careerops.projects where slug = 'pgshield';
 
-insert into public.evidence (user_id, type, title, description, employment_id, occurred_from, visibility)
-select '99999999-9999-9999-9999-999999999999', 'work_experience'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, employment_id, occurred_from, visibility)
+select '99999999-9999-9999-9999-999999999999', 'work_experience'::careerops.evidence_type,
   'Operated a multi-region Postgres fleet for 3+ years',
   'Ongoing operational ownership; not yet written up and confirmed.',
   id, '2021-03-01', 'cv_safe'
-from public.employments where organization = 'GridWorks Energy GmbH';
+from careerops.employments where organization = 'GridWorks Energy GmbH';
 
-insert into public.evidence (user_id, type, title, description, employment_id, occurred_from, verified_at, visibility)
-select '99999999-9999-9999-9999-999999999999', 'documentation'::public.evidence_type,
+insert into careerops.evidence (user_id, type, title, description, employment_id, occurred_from, verified_at, visibility)
+select '99999999-9999-9999-9999-999999999999', 'documentation'::careerops.evidence_type,
   'Internal platform onboarding runbook',
   'Runbook used to onboard new platform team members.',
   id, '2022-08-01', now() - interval '100 days', 'private'
-from public.employments where organization = 'GridWorks Energy GmbH';
+from careerops.employments where organization = 'GridWorks Energy GmbH';
 
-insert into public.project_benchmarks (user_id, project_id, capability, own_status, own_evidence_id, competitor, competitor_status, competitor_source_url, checked_at, visibility)
-select '99999999-9999-9999-9999-999999999999', p.id, b.capability, b.own_status::public.benchmark_own_status,
-  ev.id, b.competitor, b.competitor_status::public.benchmark_competitor_status, b.source_url, current_date - 30, 'portfolio_public'
-from public.projects p
+insert into careerops.project_benchmarks (user_id, project_id, capability, own_status, own_evidence_id, competitor, competitor_status, competitor_source_url, checked_at, visibility)
+select '99999999-9999-9999-9999-999999999999', p.id, b.capability, b.own_status::careerops.benchmark_own_status,
+  ev.id, b.competitor, b.competitor_status::careerops.benchmark_competitor_status, b.source_url, current_date - 30, 'portfolio_public'
+from careerops.projects p
 join lateral (values
   ('Real-time multi-vendor inverter telemetry', 'implemented', 'GreenGrid Gateway fleet rollout (2,000+ sites)', 'Enphase Enlighten', 'yes', 'https://example.invalid/reviews/enphase-enlighten'),
   ('Mixed-vendor inverter support on one site', 'implemented', 'GreenGrid Gateway fleet rollout (2,000+ sites)', 'SolarEdge Monitoring', 'no', 'https://example.invalid/reviews/solaredge-monitoring'),
   ('Home battery dispatch scheduling', 'partial', 'GreenGrid Home v3.0 multi-vendor release', 'Tesla App', 'yes', 'https://example.invalid/reviews/tesla-app')
 ) as b(capability, own_status, evidence_title, competitor, competitor_status, source_url) on true
-join public.evidence ev on ev.title = b.evidence_title and ev.user_id = '99999999-9999-9999-9999-999999999999'
+join careerops.evidence ev on ev.title = b.evidence_title and ev.user_id = '99999999-9999-9999-9999-999999999999'
 where p.slug = 'greengrid-platform';
 
-insert into public.project_benchmarks (user_id, project_id, capability, own_status, competitor, competitor_status, competitor_source_url, checked_at, visibility)
+insert into careerops.project_benchmarks (user_id, project_id, capability, own_status, competitor, competitor_status, competitor_source_url, checked_at, visibility)
 select '99999999-9999-9999-9999-999999999999', id, 'Utility bill reconciliation', 'absent', 'Enphase Enlighten', 'partial',
   'https://example.invalid/reviews/enphase-enlighten', current_date - 30, 'portfolio_public'
-from public.projects where slug = 'greengrid-platform';
+from careerops.projects where slug = 'greengrid-platform';
 
-insert into public.evidence_skills (user_id, evidence_id, skill_id, strength, demonstrated_level, rationale, suggested_by, confirmed_at)
-select '99999999-9999-9999-9999-999999999999', ev.id, sk.id, x.strength, x.demonstrated_level, x.rationale, 'user'::public.evidence_suggested_by,
+insert into careerops.evidence_skills (user_id, evidence_id, skill_id, strength, demonstrated_level, rationale, suggested_by, confirmed_at)
+select '99999999-9999-9999-9999-999999999999', ev.id, sk.id, x.strength, x.demonstrated_level, x.rationale, 'user'::careerops.evidence_suggested_by,
   case when x.confirmed then now() - interval '20 days' else null end
-from public.evidence ev
+from careerops.evidence ev
 join lateral (values
   ('GreenGrid Gateway fleet rollout (2,000+ sites)', 'kubernetes', 3, 5, 'Coordinated multi-region cluster rollout for the fleet.', true),
   ('GreenGrid Gateway fleet rollout (2,000+ sites)', 'observability', 2, 4, 'Built fleet health dashboards for the rollout.', true),
@@ -423,21 +423,21 @@ join lateral (values
   ('Internal platform onboarding runbook', 'bash-scripting', 1, null, 'Runbook includes operational scripts.', true),
   ('Internal platform onboarding runbook', 'ansible', 1, null, 'Runbook covers config management steps.', true)
 ) as x(evidence_title, skill_slug, strength, demonstrated_level, rationale, confirmed) on x.evidence_title = ev.title
-join public.skills sk on sk.slug = x.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999'
+join careerops.skills sk on sk.slug = x.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999'
 where ev.user_id = '99999999-9999-9999-9999-999999999999';
 
 -- ============================================================================
 -- 4.5 Market
 -- ============================================================================
 
-insert into public.target_roles (user_id, name, family, tier, weight, seniority_band, comp_floor, comp_currency, comp_period, comp_basis, accepted_contract_types)
+insert into careerops.target_roles (user_id, name, family, tier, weight, seniority_band, comp_floor, comp_currency, comp_period, comp_basis, accepted_contract_types)
 values
   ('99999999-9999-9999-9999-999999999999', 'Cloud & Platform Engineering', 'cloud', 'primary', 0.9, 'Senior/Staff', 75000, 'EUR', 'year', 'gross', array['employment', 'b2b_contract']),
   ('99999999-9999-9999-9999-999999999999', 'DevOps / SRE', 'devops', 'primary', 0.85, 'Senior', 70000, 'EUR', 'year', 'gross', array['employment', 'b2b_contract']),
   ('99999999-9999-9999-9999-999999999999', 'Security Engineering', 'security', 'bridge', 0.5, 'Mid/Senior', 65000, 'EUR', 'year', 'gross', array['employment']),
   ('99999999-9999-9999-9999-999999999999', 'Technical Support Leadership', 'support', 'fallback', 0.2, 'Lead', 55000, 'EUR', 'year', 'gross', array['employment']);
 
-insert into public.organizations (user_id, name, origin_country, sector, local_presence, known_systems, need_hypothesis, need_signals, employer_tier, source_urls, researched_at, visibility)
+insert into careerops.organizations (user_id, name, origin_country, sector, local_presence, known_systems, need_hypothesis, need_signals, employer_tier, source_urls, researched_at, visibility)
 values
   ('99999999-9999-9999-9999-999999999999', 'NorthGrid Systems', 'DE', 'energy-tech',
     'HQ in Munich, ~180 employees, offices in Munich and Warsaw (as of 2026-06, self-reported).',
@@ -470,19 +470,19 @@ values
     array['public tender documents', 'open Platform Reliability Lead role'],
     'a_builds_same_domain', array['https://example.invalid/solstice-utilities'], current_date - 25, 'private');
 
-insert into public.contacts (user_id, organization_id, name, title, is_role_hypothesis, channel, notes)
+insert into careerops.contacts (user_id, organization_id, name, title, is_role_hypothesis, channel, notes)
 select '99999999-9999-9999-9999-999999999999', id, 'Head of Platform Engineering', 'Head of Platform Engineering', true, 'linkedin', 'Role hypothesis; no name identified yet.'
-from public.organizations where name = 'NorthGrid Systems';
+from careerops.organizations where name = 'NorthGrid Systems';
 
-insert into public.contacts (user_id, organization_id, name, title, is_role_hypothesis, channel, notes)
+insert into careerops.contacts (user_id, organization_id, name, title, is_role_hypothesis, channel, notes)
 select '99999999-9999-9999-9999-999999999999', id, 'Mara Lindqvist', 'Engagement Manager', false, 'referral', 'Introduced by a former Open Source Foundry colleague.'
-from public.organizations where name = 'Meridian Cloud Labs';
+from careerops.organizations where name = 'Meridian Cloud Labs';
 
-insert into public.jobs (user_id, target_role_id, organization_id, company, title, location, remote_policy, seniority, employment_type, source_kind, source_url, raw_text, url_hash, content_hash, language, posted_at, status, relevance)
+insert into careerops.jobs (user_id, target_role_id, organization_id, company, title, location, remote_policy, seniority, employment_type, source_kind, source_url, raw_text, url_hash, content_hash, language, posted_at, status, relevance)
 select
-  '99999999-9999-9999-9999-999999999999', tr.id, org.id, j.company, j.title, j.location, j.remote_policy::public.remote_policy,
-  j.seniority, 'full_time', 'paste'::public.job_source_kind, j.source_url, j.raw_text,
-  md5(j.source_url), md5(j.raw_text), 'en', j.posted_at::date, j.status::public.job_status, j.relevance
+  '99999999-9999-9999-9999-999999999999', tr.id, org.id, j.company, j.title, j.location, j.remote_policy::careerops.remote_policy,
+  j.seniority, 'full_time', 'paste'::careerops.job_source_kind, j.source_url, j.raw_text,
+  md5(j.source_url), md5(j.raw_text), 'en', j.posted_at::date, j.status::careerops.job_status, j.relevance
 from (values
   ('NorthGrid Systems', 'Senior Platform Engineer', 'Cloud & Platform Engineering', 'Munich, Germany', 'hybrid', 'Senior',
     'https://example.invalid/jobs/northgrid-senior-platform-engineer',
@@ -533,13 +533,13 @@ from (values
     'Fenwick Logistics is expanding its platform team. Looking for a DevOps / Platform Engineer with Kubernetes and Terraform experience.',
     '2026-08-05', 'new', 1)
 ) as j(company, title, target_role_name, location, remote_policy, seniority, source_url, raw_text, posted_at, status, relevance)
-left join public.target_roles tr on tr.name = j.target_role_name and tr.user_id = '99999999-9999-9999-9999-999999999999'
-left join public.organizations org on org.name = j.company and org.user_id = '99999999-9999-9999-9999-999999999999';
+left join careerops.target_roles tr on tr.name = j.target_role_name and tr.user_id = '99999999-9999-9999-9999-999999999999'
+left join careerops.organizations org on org.name = j.company and org.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.job_requirements (user_id, job_id, kind, skill_id, raw_text, importance, required_level, years, is_hard_constraint, mapping_status, extracted_by)
-select '99999999-9999-9999-9999-999999999999', j.id, r.kind::public.requirement_kind, sk.id, r.raw_text, r.importance::public.requirement_importance,
-  r.required_level, r.years, r.is_hard_constraint, r.mapping_status::public.requirement_mapping_status, 'dictionary'::public.requirement_extracted_by
-from public.jobs j
+insert into careerops.job_requirements (user_id, job_id, kind, skill_id, raw_text, importance, required_level, years, is_hard_constraint, mapping_status, extracted_by)
+select '99999999-9999-9999-9999-999999999999', j.id, r.kind::careerops.requirement_kind, sk.id, r.raw_text, r.importance::careerops.requirement_importance,
+  r.required_level, r.years, r.is_hard_constraint, r.mapping_status::careerops.requirement_mapping_status, 'dictionary'::careerops.requirement_extracted_by
+from careerops.jobs j
 join lateral (values
   ('Senior Platform Engineer', 'skill', 'kubernetes', '5+ years with Kubernetes ... in production', 'required', 4, 5, false, 'confirmed'),
   ('Senior Platform Engineer', 'skill', 'terraform', '... and Terraform in production', 'required', 4, 5, false, 'confirmed'),
@@ -557,14 +557,14 @@ join lateral (values
   ('Platform Reliability Lead', 'skill', 'incident-response', 'incident response leadership experience required', 'required', 4, null, false, 'confirmed'),
   ('DevOps / Platform Engineer', 'skill', 'kubernetes', 'Kubernetes and Terraform experience', 'required', 3, null, false, 'unmapped')
 ) as r(job_title, kind, skill_slug, raw_text, importance, required_level, years, is_hard_constraint, mapping_status) on r.job_title = j.title
-left join public.skills sk on sk.slug = r.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999'
+left join careerops.skills sk on sk.slug = r.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999'
 where j.user_id = '99999999-9999-9999-9999-999999999999';
 
 -- ============================================================================
 -- 4.6 Scoring snapshots
 -- ============================================================================
 
-insert into public.scoring_configs (user_id, version, weights, thresholds, is_active)
+insert into careerops.scoring_configs (user_id, version, weights, thresholds, is_active)
 values (
   '99999999-9999-9999-9999-999999999999', '2026.1',
   '{"evidence_confidence": 0.4, "market_frequency": 0.35, "recency": 0.25}'::jsonb,
@@ -572,17 +572,17 @@ values (
   true
 );
 
-insert into public.skill_scores (
+insert into careerops.skill_scores (
   user_id, user_skill_id, target_role_id, scoring_version, scoring_config_id, breakdown,
   assessed_level, supported_level, effective_level, evidence_confidence, market_frequency, target_level, gap_type, gap_priority
 )
 select '99999999-9999-9999-9999-999999999999', us.id, tr.id, '2026.1', sc.id,
   jsonb_build_object('note', 'demo snapshot'), x.assessed_level, x.supported_level, x.effective_level,
-  x.evidence_confidence, x.market_frequency, x.target_level, x.gap_type::public.gap_type, x.gap_priority
-from public.user_skills us
-join public.skills sk on sk.id = us.skill_id
-join public.scoring_configs sc on sc.version = '2026.1' and sc.user_id = '99999999-9999-9999-9999-999999999999'
-cross join public.target_roles tr
+  x.evidence_confidence, x.market_frequency, x.target_level, x.gap_type::careerops.gap_type, x.gap_priority
+from careerops.user_skills us
+join careerops.skills sk on sk.id = us.skill_id
+join careerops.scoring_configs sc on sc.version = '2026.1' and sc.user_id = '99999999-9999-9999-9999-999999999999'
+cross join careerops.target_roles tr
 join lateral (values
   ('kubernetes', 'Cloud & Platform Engineering', 4, 4, 4, 0.9, 0.8, 5, 'prove', 0.6),
   ('terraform', 'Cloud & Platform Engineering', 4, 4, 4, 0.9, 0.75, 4, 'none', 0.1),
@@ -593,10 +593,10 @@ join lateral (values
   on x.skill_slug = sk.slug and x.role_name = tr.name
 where us.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.job_matches (user_id, job_id, scoring_version, scoring_config_id, breakdown, score, constraint_gate)
-select '99999999-9999-9999-9999-999999999999', j.id, '2026.1', sc.id, jsonb_build_object('note', 'demo snapshot'), x.score, x.constraint_gate::public.constraint_gate
-from public.jobs j
-join public.scoring_configs sc on sc.version = '2026.1' and sc.user_id = '99999999-9999-9999-9999-999999999999'
+insert into careerops.job_matches (user_id, job_id, scoring_version, scoring_config_id, breakdown, score, constraint_gate)
+select '99999999-9999-9999-9999-999999999999', j.id, '2026.1', sc.id, jsonb_build_object('note', 'demo snapshot'), x.score, x.constraint_gate::careerops.constraint_gate
+from careerops.jobs j
+join careerops.scoring_configs sc on sc.version = '2026.1' and sc.user_id = '99999999-9999-9999-9999-999999999999'
 join lateral (values
   ('Senior Platform Engineer', 88, 'pass'),
   ('Cloud Infrastructure Engineer', 82, 'pass'),
@@ -605,10 +605,10 @@ join lateral (values
 ) as x(title, score, constraint_gate) on x.title = j.title
 where j.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.readiness_snapshots (user_id, target_role_id, scoring_version, scoring_config_id, breakdown, score, sample_size, sufficient_data)
+insert into careerops.readiness_snapshots (user_id, target_role_id, scoring_version, scoring_config_id, breakdown, score, sample_size, sufficient_data)
 select '99999999-9999-9999-9999-999999999999', tr.id, '2026.1', sc.id, jsonb_build_object('note', 'demo snapshot'), x.score, x.sample_size, x.sufficient_data
-from public.target_roles tr
-join public.scoring_configs sc on sc.version = '2026.1' and sc.user_id = '99999999-9999-9999-9999-999999999999'
+from careerops.target_roles tr
+join careerops.scoring_configs sc on sc.version = '2026.1' and sc.user_id = '99999999-9999-9999-9999-999999999999'
 join lateral (values
   ('Cloud & Platform Engineering', 84, 4, true),
   ('DevOps / SRE', 78, 4, true),
@@ -621,181 +621,181 @@ where tr.user_id = '99999999-9999-9999-9999-999999999999';
 -- 4.9 System
 -- ============================================================================
 
-insert into public.ai_analyses (user_id, kind, provider, model, prompt_version, input_refs, output, status, decision, latency_ms, requested_at, completed_at)
-select '99999999-9999-9999-9999-999999999999', 'job_extraction'::public.ai_analysis_kind, 'local', 'demo-extractor', 'v1',
-  jsonb_build_object('job_id', j.id), jsonb_build_object('requirements_found', 4), 'succeeded'::public.ai_analysis_status, 'accepted'::public.ai_analysis_decision,
+insert into careerops.ai_analyses (user_id, kind, provider, model, prompt_version, input_refs, output, status, decision, latency_ms, requested_at, completed_at)
+select '99999999-9999-9999-9999-999999999999', 'job_extraction'::careerops.ai_analysis_kind, 'local', 'demo-extractor', 'v1',
+  jsonb_build_object('job_id', j.id), jsonb_build_object('requirements_found', 4), 'succeeded'::careerops.ai_analysis_status, 'accepted'::careerops.ai_analysis_decision,
   820, now() - interval '5 days', now() - interval '5 days' + interval '820 milliseconds'
-from public.jobs j where j.title = 'Senior Platform Engineer';
+from careerops.jobs j where j.title = 'Senior Platform Engineer';
 
-insert into public.ai_analyses (user_id, kind, provider, model, prompt_version, input_refs, status, requested_at)
-select '99999999-9999-9999-9999-999999999999', 'evidence_mapping'::public.ai_analysis_kind, 'local', 'demo-mapper', 'v1',
-  jsonb_build_object('evidence_id', id), 'pending'::public.ai_analysis_status, now() - interval '1 hour'
-from public.evidence where title = 'Operated a multi-region Postgres fleet for 3+ years';
+insert into careerops.ai_analyses (user_id, kind, provider, model, prompt_version, input_refs, status, requested_at)
+select '99999999-9999-9999-9999-999999999999', 'evidence_mapping'::careerops.ai_analysis_kind, 'local', 'demo-mapper', 'v1',
+  jsonb_build_object('evidence_id', id), 'pending'::careerops.ai_analysis_status, now() - interval '1 hour'
+from careerops.evidence where title = 'Operated a multi-region Postgres fleet for 3+ years';
 
-insert into public.settings (user_id, key, value) values
+insert into careerops.settings (user_id, key, value) values
   ('99999999-9999-9999-9999-999999999999', 'locale', '"en"'::jsonb),
   ('99999999-9999-9999-9999-999999999999', 'weekly_digest_enabled', 'true'::jsonb);
 
-insert into public.audit_log (user_id, entity, entity_id, action, changed_fields, actor, details)
-select '99999999-9999-9999-9999-999999999999', 'employments', id, 'update', array['disclosure_status'], 'user'::public.audit_actor,
+insert into careerops.audit_log (user_id, entity, entity_id, action, changed_fields, actor, details)
+select '99999999-9999-9999-9999-999999999999', 'employments', id, 'update', array['disclosure_status'], 'user'::careerops.audit_actor,
   jsonb_build_object('from', 'not_required', 'to', 'approved')
-from public.employments where organization = 'GridWorks Energy GmbH';
+from careerops.employments where organization = 'GridWorks Energy GmbH';
 
-insert into public.audit_log (user_id, entity, entity_id, action, changed_fields, actor, details)
-select '99999999-9999-9999-9999-999999999999', 'project_benchmarks', id, 'insert', array[]::text[], 'ai_worker'::public.audit_actor,
+insert into careerops.audit_log (user_id, entity, entity_id, action, changed_fields, actor, details)
+select '99999999-9999-9999-9999-999999999999', 'project_benchmarks', id, 'insert', array[]::text[], 'ai_worker'::careerops.audit_actor,
   jsonb_build_object('suggested_competitor', 'Enphase Enlighten')
-from public.project_benchmarks where capability = 'Real-time multi-vendor inverter telemetry';
+from careerops.project_benchmarks where capability = 'Real-time multi-vendor inverter telemetry';
 
 -- ============================================================================
 -- 4.8 Documents and opportunities
 -- ============================================================================
 
-insert into public.documents (user_id, kind, title, target_role_id)
-select '99999999-9999-9999-9999-999999999999', 'cv'::public.document_kind, 'Elena Voss - Platform Engineer CV', id
-from public.target_roles where name = 'Cloud & Platform Engineering';
+insert into careerops.documents (user_id, kind, title, target_role_id)
+select '99999999-9999-9999-9999-999999999999', 'cv'::careerops.document_kind, 'Elena Voss - Platform Engineer CV', id
+from careerops.target_roles where name = 'Cloud & Platform Engineering';
 
-insert into public.documents (user_id, kind, title, project_id)
-select '99999999-9999-9999-9999-999999999999', 'case_study'::public.document_kind, 'GreenGrid: An Edge-to-Cloud Energy Platform', id
-from public.projects where slug = 'greengrid-platform';
+insert into careerops.documents (user_id, kind, title, project_id)
+select '99999999-9999-9999-9999-999999999999', 'case_study'::careerops.document_kind, 'GreenGrid: An Edge-to-Cloud Energy Platform', id
+from careerops.projects where slug = 'greengrid-platform';
 
-insert into public.documents (user_id, kind, title, organization_id)
-select '99999999-9999-9999-9999-999999999999', 'cover_letter'::public.document_kind, 'Cover letter - NorthGrid Systems', id
-from public.organizations where name = 'NorthGrid Systems';
+insert into careerops.documents (user_id, kind, title, organization_id)
+select '99999999-9999-9999-9999-999999999999', 'cover_letter'::careerops.document_kind, 'Cover letter - NorthGrid Systems', id
+from careerops.organizations where name = 'NorthGrid Systems';
 
-insert into public.documents (user_id, kind, title, project_id)
-select '99999999-9999-9999-9999-999999999999', 'one_pager'::public.document_kind, 'GreenGrid Gateway - one pager', id
-from public.projects where slug = 'greengrid-gateway';
+insert into careerops.documents (user_id, kind, title, project_id)
+select '99999999-9999-9999-9999-999999999999', 'one_pager'::careerops.document_kind, 'GreenGrid Gateway - one pager', id
+from careerops.projects where slug = 'greengrid-gateway';
 
-insert into public.document_versions (user_id, document_id, version, rendered_md, generator)
-select '99999999-9999-9999-9999-999999999999', id, 1, '# Elena Voss\n\nPlatform Engineer CV (demo content).', 'manual'::public.document_generator
-from public.documents where title = 'Elena Voss - Platform Engineer CV';
+insert into careerops.document_versions (user_id, document_id, version, rendered_md, generator)
+select '99999999-9999-9999-9999-999999999999', id, 1, '# Elena Voss\n\nPlatform Engineer CV (demo content).', 'manual'::careerops.document_generator
+from careerops.documents where title = 'Elena Voss - Platform Engineer CV';
 
-insert into public.document_versions (user_id, document_id, version, rendered_md, generator)
-select '99999999-9999-9999-9999-999999999999', id, 1, '# GreenGrid: An Edge-to-Cloud Energy Platform\n\n(demo case study content).', 'manual'::public.document_generator
-from public.documents where title = 'GreenGrid: An Edge-to-Cloud Energy Platform';
+insert into careerops.document_versions (user_id, document_id, version, rendered_md, generator)
+select '99999999-9999-9999-9999-999999999999', id, 1, '# GreenGrid: An Edge-to-Cloud Energy Platform\n\n(demo case study content).', 'manual'::careerops.document_generator
+from careerops.documents where title = 'GreenGrid: An Edge-to-Cloud Energy Platform';
 
-insert into public.document_versions (user_id, document_id, version, rendered_md, generator)
-select '99999999-9999-9999-9999-999999999999', id, 1, 'Dear NorthGrid Systems team, (demo cover letter content).', 'manual'::public.document_generator
-from public.documents where title = 'Cover letter - NorthGrid Systems';
+insert into careerops.document_versions (user_id, document_id, version, rendered_md, generator)
+select '99999999-9999-9999-9999-999999999999', id, 1, 'Dear NorthGrid Systems team, (demo cover letter content).', 'manual'::careerops.document_generator
+from careerops.documents where title = 'Cover letter - NorthGrid Systems';
 
-insert into public.document_versions (user_id, document_id, version, rendered_md, generator)
-select '99999999-9999-9999-9999-999999999999', id, 1, '# GreenGrid Gateway\n\n(demo one-pager content).', 'manual'::public.document_generator
-from public.documents where title = 'GreenGrid Gateway - one pager';
+insert into careerops.document_versions (user_id, document_id, version, rendered_md, generator)
+select '99999999-9999-9999-9999-999999999999', id, 1, '# GreenGrid Gateway\n\n(demo one-pager content).', 'manual'::careerops.document_generator
+from careerops.documents where title = 'GreenGrid Gateway - one pager';
 
-insert into public.document_sources (user_id, document_version_id, section, employment_highlight_id)
+insert into careerops.document_sources (user_id, document_version_id, section, employment_highlight_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'highlights', eh.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
-join public.employment_highlights eh on eh.text like 'Migrated the platform team%';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
+join careerops.employment_highlights eh on eh.text like 'Migrated the platform team%';
 
-insert into public.document_sources (user_id, document_version_id, section, education_id)
+insert into careerops.document_sources (user_id, document_version_id, section, education_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'education', ed.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
-join public.education ed on ed.institution = 'Technical University of Berlin';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
+join careerops.education ed on ed.institution = 'Technical University of Berlin';
 
-insert into public.document_sources (user_id, document_version_id, section, credential_id)
+insert into careerops.document_sources (user_id, document_version_id, section, credential_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'credentials', c.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
-join public.credentials c on c.name = 'AWS Certified Solutions Architect - Associate';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
+join careerops.credentials c on c.name = 'AWS Certified Solutions Architect - Associate';
 
-insert into public.document_sources (user_id, document_version_id, section, project_id)
+insert into careerops.document_sources (user_id, document_version_id, section, project_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'architecture', p.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'GreenGrid: An Edge-to-Cloud Energy Platform'
-join public.projects p on p.slug = 'greengrid-platform';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'GreenGrid: An Edge-to-Cloud Energy Platform'
+join careerops.projects p on p.slug = 'greengrid-platform';
 
-insert into public.document_sources (user_id, document_version_id, section, project_decision_id)
+insert into careerops.document_sources (user_id, document_version_id, section, project_decision_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'difficult_decisions', pd.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'GreenGrid: An Edge-to-Cloud Energy Platform'
-join public.project_decisions pd on pd.title = 'Edge buffering strategy for intermittent connectivity';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'GreenGrid: An Edge-to-Cloud Energy Platform'
+join careerops.project_decisions pd on pd.title = 'Edge buffering strategy for intermittent connectivity';
 
-insert into public.document_sources (user_id, document_version_id, section, project_benchmark_id)
+insert into careerops.document_sources (user_id, document_version_id, section, project_benchmark_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'benchmarks', pb.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'GreenGrid: An Edge-to-Cloud Energy Platform'
-join public.project_benchmarks pb on pb.capability = 'Real-time multi-vendor inverter telemetry';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'GreenGrid: An Edge-to-Cloud Energy Platform'
+join careerops.project_benchmarks pb on pb.capability = 'Real-time multi-vendor inverter telemetry';
 
-insert into public.document_sources (user_id, document_version_id, section, evidence_id)
+insert into careerops.document_sources (user_id, document_version_id, section, evidence_id)
 select '99999999-9999-9999-9999-999999999999', dv.id, 'summary', ev.id
-from public.document_versions dv
-join public.documents d on d.id = dv.document_id and d.title = 'GreenGrid Gateway - one pager'
-join public.evidence ev on ev.title = 'GreenGrid Gateway fleet rollout (2,000+ sites)';
+from careerops.document_versions dv
+join careerops.documents d on d.id = dv.document_id and d.title = 'GreenGrid Gateway - one pager'
+join careerops.evidence ev on ev.title = 'GreenGrid Gateway fleet rollout (2,000+ sites)';
 
-insert into public.opportunities (
+insert into careerops.opportunities (
   user_id, track, origin, organization_id, job_id, target_role_id, project_id, title, angle,
   fit, receptiveness, stage, outcome, job_match_id, expected_comp, comp_currency, comp_period, comp_basis,
   contract_type, remote_policy, terms_notes, first_contact_at, next_action, next_action_due
 )
 select
-  '99999999-9999-9999-9999-999999999999', 'employment'::public.opportunity_track, 'job_ad'::public.opportunity_origin,
+  '99999999-9999-9999-9999-999999999999', 'employment'::careerops.opportunity_track, 'job_ad'::careerops.opportunity_origin,
   org.id, j.id, tr.id, p.id, 'NorthGrid Systems - Senior Platform Engineer', 'Direct edge-fleet experience matching their in-housing plan.',
-  5, 4, 'negotiation'::public.opportunity_stage, 'open'::public.opportunity_outcome, jm.id,
-  85000, 'EUR', 'year'::public.comp_period, 'gross'::public.comp_basis, 'employment'::public.contract_type, 'hybrid'::public.remote_policy,
+  5, 4, 'negotiation'::careerops.opportunity_stage, 'open'::careerops.opportunity_outcome, jm.id,
+  85000, 'EUR', 'year'::careerops.comp_period, 'gross'::careerops.comp_basis, 'employment'::careerops.contract_type, 'hybrid'::careerops.remote_policy,
   'Verbal offer above target_roles floor; awaiting written contract.', now() - interval '30 days', 'Awaiting written offer', current_date + 5
-from public.organizations org
-join public.jobs j on j.title = 'Senior Platform Engineer' and j.user_id = org.user_id
-join public.target_roles tr on tr.name = 'Cloud & Platform Engineering' and tr.user_id = org.user_id
-join public.projects p on p.slug = 'greengrid-platform' and p.user_id = org.user_id
-join public.job_matches jm on jm.job_id = j.id
+from careerops.organizations org
+join careerops.jobs j on j.title = 'Senior Platform Engineer' and j.user_id = org.user_id
+join careerops.target_roles tr on tr.name = 'Cloud & Platform Engineering' and tr.user_id = org.user_id
+join careerops.projects p on p.slug = 'greengrid-platform' and p.user_id = org.user_id
+join careerops.job_matches jm on jm.job_id = j.id
 where org.name = 'NorthGrid Systems';
 
-insert into public.opportunities (user_id, track, origin, organization_id, target_role_id, project_id, title, angle, fit, receptiveness, stage, outcome, remote_policy, first_contact_at)
-select '99999999-9999-9999-9999-999999999999', 'employment'::public.opportunity_track, 'outreach'::public.opportunity_origin,
+insert into careerops.opportunities (user_id, track, origin, organization_id, target_role_id, project_id, title, angle, fit, receptiveness, stage, outcome, remote_policy, first_contact_at)
+select '99999999-9999-9999-9999-999999999999', 'employment'::careerops.opportunity_track, 'outreach'::careerops.opportunity_origin,
   org.id, tr.id, p.id, 'Solstice Utilities - platform capability outreach',
   'I have already built the edge-to-cloud telemetry platform your metering rollout is scoping.',
-  4, 3, 'conversation'::public.opportunity_stage, 'open'::public.opportunity_outcome, 'hybrid'::public.remote_policy, now() - interval '10 days'
-from public.organizations org
-join public.target_roles tr on tr.name = 'Cloud & Platform Engineering' and tr.user_id = org.user_id
-join public.projects p on p.slug = 'greengrid-platform' and p.user_id = org.user_id
+  4, 3, 'conversation'::careerops.opportunity_stage, 'open'::careerops.opportunity_outcome, 'hybrid'::careerops.remote_policy, now() - interval '10 days'
+from careerops.organizations org
+join careerops.target_roles tr on tr.name = 'Cloud & Platform Engineering' and tr.user_id = org.user_id
+join careerops.projects p on p.slug = 'greengrid-platform' and p.user_id = org.user_id
 where org.name = 'Solstice Utilities';
 
-insert into public.opportunities (user_id, track, origin, organization_id, title, stage, outcome, remote_policy, first_contact_at)
-select '99999999-9999-9999-9999-999999999999', 'contract'::public.opportunity_track, 'referral'::public.opportunity_origin,
-  id, 'Meridian Cloud Labs - referred contract engagement', 'contacted'::public.opportunity_stage, 'open'::public.opportunity_outcome,
-  'remote'::public.remote_policy, now() - interval '5 days'
-from public.organizations where name = 'Meridian Cloud Labs';
+insert into careerops.opportunities (user_id, track, origin, organization_id, title, stage, outcome, remote_policy, first_contact_at)
+select '99999999-9999-9999-9999-999999999999', 'contract'::careerops.opportunity_track, 'referral'::careerops.opportunity_origin,
+  id, 'Meridian Cloud Labs - referred contract engagement', 'contacted'::careerops.opportunity_stage, 'open'::careerops.opportunity_outcome,
+  'remote'::careerops.remote_policy, now() - interval '5 days'
+from careerops.organizations where name = 'Meridian Cloud Labs';
 
-insert into public.opportunities (user_id, track, origin, organization_id, job_id, title, stage, outcome, remote_policy, first_contact_at)
-select '99999999-9999-9999-9999-999999999999', 'employment'::public.opportunity_track, 'job_ad'::public.opportunity_origin,
-  org.id, j.id, 'Fenwick Logistics - Site Reliability Engineer', 'evaluation'::public.opportunity_stage, 'open'::public.opportunity_outcome,
-  'onsite'::public.remote_policy, now() - interval '14 days'
-from public.organizations org
-join public.jobs j on j.title = 'Site Reliability Engineer' and j.user_id = org.user_id
+insert into careerops.opportunities (user_id, track, origin, organization_id, job_id, title, stage, outcome, remote_policy, first_contact_at)
+select '99999999-9999-9999-9999-999999999999', 'employment'::careerops.opportunity_track, 'job_ad'::careerops.opportunity_origin,
+  org.id, j.id, 'Fenwick Logistics - Site Reliability Engineer', 'evaluation'::careerops.opportunity_stage, 'open'::careerops.opportunity_outcome,
+  'onsite'::careerops.remote_policy, now() - interval '14 days'
+from careerops.organizations org
+join careerops.jobs j on j.title = 'Site Reliability Engineer' and j.user_id = org.user_id
 where org.name = 'Fenwick Logistics';
 
-insert into public.opportunities (user_id, track, origin, organization_id, title, stage, outcome, remote_policy, first_contact_at)
-select '99999999-9999-9999-9999-999999999999', 'employment'::public.opportunity_track, 'job_ad'::public.opportunity_origin,
-  id, 'Arcline Robotics - Security Engineer', 'closed'::public.opportunity_stage, 'rejected'::public.opportunity_outcome,
-  'hybrid'::public.remote_policy, now() - interval '60 days'
-from public.organizations where name = 'Arcline Robotics';
+insert into careerops.opportunities (user_id, track, origin, organization_id, title, stage, outcome, remote_policy, first_contact_at)
+select '99999999-9999-9999-9999-999999999999', 'employment'::careerops.opportunity_track, 'job_ad'::careerops.opportunity_origin,
+  id, 'Arcline Robotics - Security Engineer', 'closed'::careerops.opportunity_stage, 'rejected'::careerops.opportunity_outcome,
+  'hybrid'::careerops.remote_policy, now() - interval '60 days'
+from careerops.organizations where name = 'Arcline Robotics';
 
-insert into public.opportunities (user_id, track, origin, title, stage, outcome, remote_policy)
+insert into careerops.opportunities (user_id, track, origin, title, stage, outcome, remote_policy)
 values (
-  '99999999-9999-9999-9999-999999999999', 'consulting'::public.opportunity_track, 'inbound'::public.opportunity_origin,
-  'Unattributed inbound consulting lead', 'identified'::public.opportunity_stage, 'open'::public.opportunity_outcome, 'unknown'::public.remote_policy
+  '99999999-9999-9999-9999-999999999999', 'consulting'::careerops.opportunity_track, 'inbound'::careerops.opportunity_origin,
+  'Unattributed inbound consulting lead', 'identified'::careerops.opportunity_stage, 'open'::careerops.opportunity_outcome, 'unknown'::careerops.remote_policy
 );
 
-insert into public.opportunity_documents (user_id, opportunity_id, document_version_id, role)
-select '99999999-9999-9999-9999-999999999999', o.id, dv.id, 'cv'::public.opportunity_document_role
-from public.opportunities o
-join public.document_versions dv on true
-join public.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
+insert into careerops.opportunity_documents (user_id, opportunity_id, document_version_id, role)
+select '99999999-9999-9999-9999-999999999999', o.id, dv.id, 'cv'::careerops.opportunity_document_role
+from careerops.opportunities o
+join careerops.document_versions dv on true
+join careerops.documents d on d.id = dv.document_id and d.title = 'Elena Voss - Platform Engineer CV'
 where o.title = 'NorthGrid Systems - Senior Platform Engineer';
 
-insert into public.opportunity_documents (user_id, opportunity_id, document_version_id, role)
-select '99999999-9999-9999-9999-999999999999', o.id, dv.id, 'cover_letter'::public.opportunity_document_role
-from public.opportunities o
-join public.document_versions dv on true
-join public.documents d on d.id = dv.document_id and d.title = 'Cover letter - NorthGrid Systems'
+insert into careerops.opportunity_documents (user_id, opportunity_id, document_version_id, role)
+select '99999999-9999-9999-9999-999999999999', o.id, dv.id, 'cover_letter'::careerops.opportunity_document_role
+from careerops.opportunities o
+join careerops.document_versions dv on true
+join careerops.documents d on d.id = dv.document_id and d.title = 'Cover letter - NorthGrid Systems'
 where o.title = 'NorthGrid Systems - Senior Platform Engineer';
 
-insert into public.opportunity_events (user_id, opportunity_id, type, from_stage, to_stage, occurred_at, note)
-select '99999999-9999-9999-9999-999999999999', o.id, e.type::public.opportunity_event_type,
-  e.from_stage::public.opportunity_stage, e.to_stage::public.opportunity_stage, e.occurred_at, e.note
-from public.opportunities o,
+insert into careerops.opportunity_events (user_id, opportunity_id, type, from_stage, to_stage, occurred_at, note)
+select '99999999-9999-9999-9999-999999999999', o.id, e.type::careerops.opportunity_event_type,
+  e.from_stage::careerops.opportunity_stage, e.to_stage::careerops.opportunity_stage, e.occurred_at, e.note
+from careerops.opportunities o,
   lateral (values
     ('stage_change', null, 'identified', now() - interval '35 days', 'Ad matched Cloud & Platform Engineering target role.'),
     ('stage_change', 'identified', 'researched', now() - interval '34 days', null),
@@ -806,93 +806,93 @@ from public.opportunities o,
   ) as e(type, from_stage, to_stage, occurred_at, note)
 where o.title = 'NorthGrid Systems - Senior Platform Engineer';
 
-insert into public.opportunity_events (user_id, opportunity_id, type, interview_kind, from_stage, to_stage, occurred_at, note)
-select '99999999-9999-9999-9999-999999999999', id, 'interview'::public.opportunity_event_type, 'final'::public.interview_kind,
-  'evaluation'::public.opportunity_stage, 'evaluation'::public.opportunity_stage, now() - interval '65 days', 'Final-round panel interview.'
-from public.opportunities where title = 'Arcline Robotics - Security Engineer';
+insert into careerops.opportunity_events (user_id, opportunity_id, type, interview_kind, from_stage, to_stage, occurred_at, note)
+select '99999999-9999-9999-9999-999999999999', id, 'interview'::careerops.opportunity_event_type, 'final'::careerops.interview_kind,
+  'evaluation'::careerops.opportunity_stage, 'evaluation'::careerops.opportunity_stage, now() - interval '65 days', 'Final-round panel interview.'
+from careerops.opportunities where title = 'Arcline Robotics - Security Engineer';
 
-insert into public.opportunity_events (user_id, opportunity_id, type, from_stage, to_stage, occurred_at, note)
-select '99999999-9999-9999-9999-999999999999', id, 'stage_change'::public.opportunity_event_type,
-  'evaluation'::public.opportunity_stage, 'closed'::public.opportunity_stage, now() - interval '60 days', 'Not selected after the final interview.'
-from public.opportunities where title = 'Arcline Robotics - Security Engineer';
+insert into careerops.opportunity_events (user_id, opportunity_id, type, from_stage, to_stage, occurred_at, note)
+select '99999999-9999-9999-9999-999999999999', id, 'stage_change'::careerops.opportunity_event_type,
+  'evaluation'::careerops.opportunity_stage, 'closed'::careerops.opportunity_stage, now() - interval '60 days', 'Not selected after the final interview.'
+from careerops.opportunities where title = 'Arcline Robotics - Security Engineer';
 
 -- ============================================================================
 -- 4.7 Execution
 -- ============================================================================
 
-insert into public.roadmap_items (user_id, title, description, horizon, target_role_id, status, due_date, definition_of_done, requires_evidence)
+insert into careerops.roadmap_items (user_id, title, description, horizon, target_role_id, status, due_date, definition_of_done, requires_evidence)
 select '99999999-9999-9999-9999-999999999999', 'Reach Staff-level readiness for Cloud & Platform roles',
-  'Close the remaining gaps between current evidence and Staff-level expectations.', 'target'::public.roadmap_horizon, id,
-  'active'::public.roadmap_status, null,
+  'Close the remaining gaps between current evidence and Staff-level expectations.', 'target'::careerops.roadmap_horizon, id,
+  'active'::careerops.roadmap_status, null,
   '[{"text": "Ship 2 more production-benchmarked capabilities", "done": false}, {"text": "Earn CKA", "done": false}]'::jsonb,
   true
-from public.target_roles where name = 'Cloud & Platform Engineering';
+from careerops.target_roles where name = 'Cloud & Platform Engineering';
 
-insert into public.roadmap_items (user_id, title, description, horizon, status, due_date, definition_of_done, requires_evidence)
+insert into careerops.roadmap_items (user_id, title, description, horizon, status, due_date, definition_of_done, requires_evidence)
 values (
   '99999999-9999-9999-9999-999999999999', 'Close the CKA certification gap',
   'Finish the Certified Kubernetes Administrator exam.', 'd90', 'active', current_date + 45,
   '[{"text": "Pass the CKA exam", "done": false}]'::jsonb, true
 );
 
-insert into public.roadmap_items (user_id, title, description, horizon, status, definition_of_done, requires_evidence)
+insert into careerops.roadmap_items (user_id, title, description, horizon, status, definition_of_done, requires_evidence)
 values (
   '99999999-9999-9999-9999-999999999999', 'Publish pgshield v1.0 and gather external users',
   'Get the RLS audit CLI to a stable public release.', 'm6', 'done',
   '[{"text": "Tag v1.0 and publish the repository", "done": true}]'::jsonb, true
 );
 
-insert into public.roadmap_item_skills (user_id, roadmap_item_id, skill_id, from_level, to_level)
+insert into careerops.roadmap_item_skills (user_id, roadmap_item_id, skill_id, from_level, to_level)
 select '99999999-9999-9999-9999-999999999999', ri.id, sk.id, x.from_level, x.to_level
-from public.roadmap_items ri
+from careerops.roadmap_items ri
 join lateral (values
   ('Reach Staff-level readiness for Cloud & Platform roles', 'kubernetes', 4, 5),
   ('Close the CKA certification gap', 'kubernetes', 4, 5),
   ('Publish pgshield v1.0 and gather external users', 'go', 3, 4),
   ('Publish pgshield v1.0 and gather external users', 'postgresql', 4, 4)
 ) as x(item_title, skill_slug, from_level, to_level) on x.item_title = ri.title
-join public.skills sk on sk.slug = x.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999'
+join careerops.skills sk on sk.slug = x.skill_slug and sk.user_id = '99999999-9999-9999-9999-999999999999'
 where ri.user_id = '99999999-9999-9999-9999-999999999999';
 
-insert into public.roadmap_item_evidence (user_id, roadmap_item_id, evidence_id)
+insert into careerops.roadmap_item_evidence (user_id, roadmap_item_id, evidence_id)
 select '99999999-9999-9999-9999-999999999999', ri.id, ev.id
-from public.roadmap_items ri
-join public.evidence ev on ev.title = 'pgshield public repository'
+from careerops.roadmap_items ri
+join careerops.evidence ev on ev.title = 'pgshield public repository'
 where ri.title = 'Publish pgshield v1.0 and gather external users';
 
-insert into public.roadmap_item_evidence (user_id, roadmap_item_id, evidence_id)
+insert into careerops.roadmap_item_evidence (user_id, roadmap_item_id, evidence_id)
 select '99999999-9999-9999-9999-999999999999', ri.id, ev.id
-from public.roadmap_items ri
-join public.evidence ev on ev.title = 'GreenGrid Gateway fleet rollout (2,000+ sites)'
+from careerops.roadmap_items ri
+join careerops.evidence ev on ev.title = 'GreenGrid Gateway fleet rollout (2,000+ sites)'
 where ri.title = 'Reach Staff-level readiness for Cloud & Platform roles';
 
-insert into public.tasks (user_id, title, notes, status, is_focus, skill_id, roadmap_item_id)
+insert into careerops.tasks (user_id, title, notes, status, is_focus, skill_id, roadmap_item_id)
 select '99999999-9999-9999-9999-999999999999', 'Finish CKA practice exams', 'Two practice exams left before the real attempt.',
-  'doing'::public.task_status, true, sk.id, ri.id
-from public.skills sk, public.roadmap_items ri
+  'doing'::careerops.task_status, true, sk.id, ri.id
+from careerops.skills sk, careerops.roadmap_items ri
 where sk.slug = 'kubernetes' and sk.user_id = '99999999-9999-9999-9999-999999999999'
   and ri.title = 'Close the CKA certification gap';
 
-insert into public.tasks (user_id, title, notes, status, is_focus, opportunity_id)
+insert into careerops.tasks (user_id, title, notes, status, is_focus, opportunity_id)
 select '99999999-9999-9999-9999-999999999999', 'Draft NorthGrid negotiation counter-offer', 'Compare verbal offer against target role comp floor.',
-  'todo'::public.task_status, true, id
-from public.opportunities where title = 'NorthGrid Systems - Senior Platform Engineer';
+  'todo'::careerops.task_status, true, id
+from careerops.opportunities where title = 'NorthGrid Systems - Senior Platform Engineer';
 
-insert into public.tasks (user_id, title, notes, status, is_focus, project_id, roadmap_item_id)
-select '99999999-9999-9999-9999-999999999999', 'Write pgshield v1.0 release notes', null, 'done'::public.task_status, false, p.id, ri.id
-from public.projects p, public.roadmap_items ri
+insert into careerops.tasks (user_id, title, notes, status, is_focus, project_id, roadmap_item_id)
+select '99999999-9999-9999-9999-999999999999', 'Write pgshield v1.0 release notes', null, 'done'::careerops.task_status, false, p.id, ri.id
+from careerops.projects p, careerops.roadmap_items ri
 where p.slug = 'pgshield' and ri.title = 'Publish pgshield v1.0 and gather external users';
 
-insert into public.tasks (user_id, title, notes, status, is_focus, opportunity_id)
-select '99999999-9999-9999-9999-999999999999', 'Follow up with Meridian Cloud Labs referral contact', null, 'todo'::public.task_status, true, id
-from public.opportunities where title = 'Meridian Cloud Labs - referred contract engagement';
+insert into careerops.tasks (user_id, title, notes, status, is_focus, opportunity_id)
+select '99999999-9999-9999-9999-999999999999', 'Follow up with Meridian Cloud Labs referral contact', null, 'todo'::careerops.task_status, true, id
+from careerops.opportunities where title = 'Meridian Cloud Labs - referred contract engagement';
 
-insert into public.tasks (user_id, title, notes, status, is_focus, job_id)
-select '99999999-9999-9999-9999-999999999999', 'Review Fenwick Logistics job requirements for skill gaps', null, 'todo'::public.task_status, false, id
-from public.jobs where title = 'Site Reliability Engineer';
+insert into careerops.tasks (user_id, title, notes, status, is_focus, job_id)
+select '99999999-9999-9999-9999-999999999999', 'Review Fenwick Logistics job requirements for skill gaps', null, 'todo'::careerops.task_status, false, id
+from careerops.jobs where title = 'Site Reliability Engineer';
 
-insert into public.tasks (user_id, title, notes, status, is_focus, project_id)
-select '99999999-9999-9999-9999-999999999999', 'Publish edge buffering design doc as a blog article', null, 'todo'::public.task_status, true, id
-from public.projects where slug = 'greengrid-platform';
+insert into careerops.tasks (user_id, title, notes, status, is_focus, project_id)
+select '99999999-9999-9999-9999-999999999999', 'Publish edge buffering design doc as a blog article', null, 'todo'::careerops.task_status, true, id
+from careerops.projects where slug = 'greengrid-platform';
 
 commit;

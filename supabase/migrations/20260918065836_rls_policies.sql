@@ -11,7 +11,7 @@
 -- auditable statement. They are migration-time tooling only: dropped at
 -- the end of this file so they are never exposed as PostgREST RPCs.
 
-create function public.apply_owner_crud_policies(target_table regclass)
+create function careerops.apply_owner_crud_policies(target_table regclass)
 returns void
 language plpgsql
 as $$
@@ -26,7 +26,7 @@ begin
 end;
 $$;
 
-create function public.apply_owner_append_only_policies(target_table regclass)
+create function careerops.apply_owner_append_only_policies(target_table regclass)
 returns void
 language plpgsql
 as $$
@@ -37,50 +37,50 @@ end;
 $$;
 
 -- Career history (#4)
-select public.apply_owner_crud_policies('public.profiles');
-select public.apply_owner_crud_policies('public.employments');
-select public.apply_owner_crud_policies('public.employment_highlights');
-select public.apply_owner_crud_policies('public.education');
-select public.apply_owner_crud_policies('public.credentials');
-select public.apply_owner_crud_policies('public.languages');
+select careerops.apply_owner_crud_policies('careerops.profiles');
+select careerops.apply_owner_crud_policies('careerops.employments');
+select careerops.apply_owner_crud_policies('careerops.employment_highlights');
+select careerops.apply_owner_crud_policies('careerops.education');
+select careerops.apply_owner_crud_policies('careerops.credentials');
+select careerops.apply_owner_crud_policies('careerops.languages');
 
 -- Skill catalog, user skills, learning, projects, evidence (#5)
-select public.apply_owner_crud_policies('public.skill_categories');
-select public.apply_owner_crud_policies('public.skills');
-select public.apply_owner_crud_policies('public.skill_aliases');
-select public.apply_owner_crud_policies('public.user_skills');
-select public.apply_owner_append_only_policies('public.skill_assessments');
-select public.apply_owner_crud_policies('public.learning_resources');
-select public.apply_owner_crud_policies('public.learning_resource_skills');
-select public.apply_owner_crud_policies('public.projects');
-select public.apply_owner_crud_policies('public.project_decisions');
-select public.apply_owner_crud_policies('public.evidence');
-select public.apply_owner_crud_policies('public.evidence_skills');
-select public.apply_owner_crud_policies('public.project_benchmarks');
+select careerops.apply_owner_crud_policies('careerops.skill_categories');
+select careerops.apply_owner_crud_policies('careerops.skills');
+select careerops.apply_owner_crud_policies('careerops.skill_aliases');
+select careerops.apply_owner_crud_policies('careerops.user_skills');
+select careerops.apply_owner_append_only_policies('careerops.skill_assessments');
+select careerops.apply_owner_crud_policies('careerops.learning_resources');
+select careerops.apply_owner_crud_policies('careerops.learning_resource_skills');
+select careerops.apply_owner_crud_policies('careerops.projects');
+select careerops.apply_owner_crud_policies('careerops.project_decisions');
+select careerops.apply_owner_crud_policies('careerops.evidence');
+select careerops.apply_owner_crud_policies('careerops.evidence_skills');
+select careerops.apply_owner_crud_policies('careerops.project_benchmarks');
 
 -- Market, scoring snapshots, system, documents, opportunities, execution (#6)
-select public.apply_owner_crud_policies('public.target_roles');
-select public.apply_owner_crud_policies('public.organizations');
-select public.apply_owner_crud_policies('public.contacts');
-select public.apply_owner_crud_policies('public.jobs');
-select public.apply_owner_crud_policies('public.job_requirements');
-select public.apply_owner_crud_policies('public.scoring_configs');
-select public.apply_owner_crud_policies('public.skill_scores');
-select public.apply_owner_crud_policies('public.job_matches');
-select public.apply_owner_crud_policies('public.readiness_snapshots');
-select public.apply_owner_crud_policies('public.ai_analyses');
-select public.apply_owner_crud_policies('public.settings');
-select public.apply_owner_append_only_policies('public.audit_log');
-select public.apply_owner_crud_policies('public.documents');
-select public.apply_owner_crud_policies('public.document_versions');
-select public.apply_owner_crud_policies('public.document_sources');
-select public.apply_owner_crud_policies('public.opportunities');
-select public.apply_owner_crud_policies('public.opportunity_documents');
-select public.apply_owner_crud_policies('public.opportunity_events');
-select public.apply_owner_crud_policies('public.roadmap_items');
-select public.apply_owner_crud_policies('public.roadmap_item_skills');
-select public.apply_owner_crud_policies('public.roadmap_item_evidence');
-select public.apply_owner_crud_policies('public.tasks');
+select careerops.apply_owner_crud_policies('careerops.target_roles');
+select careerops.apply_owner_crud_policies('careerops.organizations');
+select careerops.apply_owner_crud_policies('careerops.contacts');
+select careerops.apply_owner_crud_policies('careerops.jobs');
+select careerops.apply_owner_crud_policies('careerops.job_requirements');
+select careerops.apply_owner_crud_policies('careerops.scoring_configs');
+select careerops.apply_owner_crud_policies('careerops.skill_scores');
+select careerops.apply_owner_crud_policies('careerops.job_matches');
+select careerops.apply_owner_crud_policies('careerops.readiness_snapshots');
+select careerops.apply_owner_crud_policies('careerops.ai_analyses');
+select careerops.apply_owner_crud_policies('careerops.settings');
+select careerops.apply_owner_append_only_policies('careerops.audit_log');
+select careerops.apply_owner_crud_policies('careerops.documents');
+select careerops.apply_owner_crud_policies('careerops.document_versions');
+select careerops.apply_owner_crud_policies('careerops.document_sources');
+select careerops.apply_owner_crud_policies('careerops.opportunities');
+select careerops.apply_owner_crud_policies('careerops.opportunity_documents');
+select careerops.apply_owner_crud_policies('careerops.opportunity_events');
+select careerops.apply_owner_crud_policies('careerops.roadmap_items');
+select careerops.apply_owner_crud_policies('careerops.roadmap_item_skills');
+select careerops.apply_owner_crud_policies('careerops.roadmap_item_evidence');
+select careerops.apply_owner_crud_policies('careerops.tasks');
 
-drop function public.apply_owner_crud_policies(regclass);
-drop function public.apply_owner_append_only_policies(regclass);
+drop function careerops.apply_owner_crud_policies(regclass);
+drop function careerops.apply_owner_append_only_policies(regclass);
