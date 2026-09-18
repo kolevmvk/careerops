@@ -13,35 +13,35 @@
 -- other source tables have no such column and are treated as verified by
 -- existing.
 
-create function public.enforce_document_source_invariants()
+create function careerops.enforce_document_source_invariants()
 returns trigger
 language plpgsql
 as $$
 declare
-  doc_kind public.document_kind;
-  min_visibility public.visibility;
-  source_visibility public.visibility;
+  doc_kind careerops.document_kind;
+  min_visibility careerops.visibility;
+  source_visibility careerops.visibility;
   source_verified boolean;
 begin
   select d.kind into doc_kind
-  from public.document_versions dv
-  join public.documents d on d.id = dv.document_id
+  from careerops.document_versions dv
+  join careerops.documents d on d.id = dv.document_id
   where dv.id = new.document_version_id;
 
   min_visibility := case when doc_kind in ('case_study', 'article') then 'portfolio_public' else 'cv_safe' end;
 
   if new.evidence_id is not null then
     select visibility, (verified_at is not null) into source_visibility, source_verified
-    from public.evidence where id = new.evidence_id;
+    from careerops.evidence where id = new.evidence_id;
 
   elsif new.employment_highlight_id is not null then
     select visibility, (verified_at is not null) into source_visibility, source_verified
-    from public.employment_highlights where id = new.employment_highlight_id;
+    from careerops.employment_highlights where id = new.employment_highlight_id;
 
   elsif new.project_benchmark_id is not null then
     select pb.visibility, (ev.verified_at is not null) into source_visibility, source_verified
-    from public.project_benchmarks pb
-    left join public.evidence ev on ev.id = pb.own_evidence_id
+    from careerops.project_benchmarks pb
+    left join careerops.evidence ev on ev.id = pb.own_evidence_id
     where pb.id = new.project_benchmark_id;
 
     if source_visibility is null then
@@ -49,7 +49,7 @@ begin
     end if;
 
     if not exists (
-      select 1 from public.project_benchmarks
+      select 1 from careerops.project_benchmarks
       where id = new.project_benchmark_id
         and checked_at is not null
         and checked_at >= current_date - interval '180 days'
@@ -60,23 +60,23 @@ begin
 
   elsif new.employment_id is not null then
     select visibility, true into source_visibility, source_verified
-    from public.employments where id = new.employment_id;
+    from careerops.employments where id = new.employment_id;
 
   elsif new.project_id is not null then
     select visibility, true into source_visibility, source_verified
-    from public.projects where id = new.project_id;
+    from careerops.projects where id = new.project_id;
 
   elsif new.project_decision_id is not null then
     select visibility, true into source_visibility, source_verified
-    from public.project_decisions where id = new.project_decision_id;
+    from careerops.project_decisions where id = new.project_decision_id;
 
   elsif new.credential_id is not null then
     select visibility, (status = 'earned') into source_visibility, source_verified
-    from public.credentials where id = new.credential_id;
+    from careerops.credentials where id = new.credential_id;
 
   elsif new.education_id is not null then
     select visibility, true into source_visibility, source_verified
-    from public.education where id = new.education_id;
+    from careerops.education where id = new.education_id;
   end if;
 
   if source_visibility is null then
@@ -97,5 +97,5 @@ end;
 $$;
 
 create trigger enforce_document_source_invariants
-  before insert or update on public.document_sources
-  for each row execute function public.enforce_document_source_invariants();
+  before insert or update on careerops.document_sources
+  for each row execute function careerops.enforce_document_source_invariants();

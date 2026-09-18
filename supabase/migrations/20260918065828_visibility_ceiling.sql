@@ -12,13 +12,13 @@
 -- restricted employment silently caps a bullet's visibility rather than
 -- failing the save, matching "caps" and "forced" in DOMAIN §5.2.
 
-create function public.enforce_visibility_ceiling()
+create function careerops.enforce_visibility_ceiling()
 returns trigger
 language plpgsql
 as $$
 declare
-  cap public.visibility;
-  parent_visibility public.visibility;
+  cap careerops.visibility;
+  parent_visibility careerops.visibility;
 begin
   if TG_TABLE_NAME in ('employments', 'projects') then
     cap := case NEW.disclosure_status
@@ -35,37 +35,37 @@ begin
 
   if TG_TABLE_NAME = 'projects' then
     if NEW.parent_project_id is not null then
-      select visibility into parent_visibility from public.projects where id = NEW.parent_project_id;
+      select visibility into parent_visibility from careerops.projects where id = NEW.parent_project_id;
       if parent_visibility is not null and parent_visibility < cap then
         cap := parent_visibility;
       end if;
     end if;
     if NEW.employment_id is not null then
-      select visibility into parent_visibility from public.employments where id = NEW.employment_id;
+      select visibility into parent_visibility from careerops.employments where id = NEW.employment_id;
       if parent_visibility is not null and parent_visibility < cap then
         cap := parent_visibility;
       end if;
     end if;
   elsif TG_TABLE_NAME = 'evidence' then
     if NEW.project_id is not null then
-      select visibility into parent_visibility from public.projects where id = NEW.project_id;
+      select visibility into parent_visibility from careerops.projects where id = NEW.project_id;
       if parent_visibility is not null and parent_visibility < cap then
         cap := parent_visibility;
       end if;
     end if;
     if NEW.employment_id is not null then
-      select visibility into parent_visibility from public.employments where id = NEW.employment_id;
+      select visibility into parent_visibility from careerops.employments where id = NEW.employment_id;
       if parent_visibility is not null and parent_visibility < cap then
         cap := parent_visibility;
       end if;
     end if;
   elsif TG_TABLE_NAME = 'employment_highlights' then
-    select visibility into parent_visibility from public.employments where id = NEW.employment_id;
+    select visibility into parent_visibility from careerops.employments where id = NEW.employment_id;
     if parent_visibility is not null and parent_visibility < cap then
       cap := parent_visibility;
     end if;
   elsif TG_TABLE_NAME = 'project_decisions' then
-    select visibility into parent_visibility from public.projects where id = NEW.project_id;
+    select visibility into parent_visibility from careerops.projects where id = NEW.project_id;
     if parent_visibility is not null and parent_visibility < cap then
       cap := parent_visibility;
     end if;
@@ -80,21 +80,21 @@ end;
 $$;
 
 create trigger enforce_visibility_ceiling
-  before insert or update on public.employments
-  for each row execute function public.enforce_visibility_ceiling();
+  before insert or update on careerops.employments
+  for each row execute function careerops.enforce_visibility_ceiling();
 
 create trigger enforce_visibility_ceiling
-  before insert or update on public.projects
-  for each row execute function public.enforce_visibility_ceiling();
+  before insert or update on careerops.projects
+  for each row execute function careerops.enforce_visibility_ceiling();
 
 create trigger enforce_visibility_ceiling
-  before insert or update on public.evidence
-  for each row execute function public.enforce_visibility_ceiling();
+  before insert or update on careerops.evidence
+  for each row execute function careerops.enforce_visibility_ceiling();
 
 create trigger enforce_visibility_ceiling
-  before insert or update on public.employment_highlights
-  for each row execute function public.enforce_visibility_ceiling();
+  before insert or update on careerops.employment_highlights
+  for each row execute function careerops.enforce_visibility_ceiling();
 
 create trigger enforce_visibility_ceiling
-  before insert or update on public.project_decisions
-  for each row execute function public.enforce_visibility_ceiling();
+  before insert or update on careerops.project_decisions
+  for each row execute function careerops.enforce_visibility_ceiling();

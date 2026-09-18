@@ -8,14 +8,14 @@
 -- (services/ai-worker); for now they exist so no other code path is built
 -- against the unfiltered base tables.
 
-create view public.ai_context_employments
+create view careerops.ai_context_employments
 with (security_invoker = true) as
-select * from public.employments where ai_allowed = true;
+select * from careerops.employments where ai_allowed = true;
 
-create view public.ai_context_projects
+create view careerops.ai_context_projects
 with (security_invoker = true) as
-select * from public.projects where ai_allowed = true;
+select * from careerops.projects where ai_allowed = true;
 
-create view public.ai_context_evidence
+create view careerops.ai_context_evidence
 with (security_invoker = true) as
-select * from public.evidence where ai_allowed = true;
+select * from careerops.evidence where ai_allowed = true;

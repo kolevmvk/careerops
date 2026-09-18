@@ -2,7 +2,7 @@
 -- I3: linking a document version to an opportunity freezes it.
 -- (docs/DOMAIN.md §6, ADR-0005)
 
-create function public.enforce_document_version_immutable()
+create function careerops.enforce_document_version_immutable()
 returns trigger
 language plpgsql
 as $$
@@ -23,18 +23,18 @@ end;
 $$;
 
 create trigger enforce_document_version_immutable
-  before update or delete on public.document_versions
-  for each row execute function public.enforce_document_version_immutable();
+  before update or delete on careerops.document_versions
+  for each row execute function careerops.enforce_document_version_immutable();
 
 -- Runs as a plain BEFORE INSERT trigger, so the UPDATE below still passes
 -- through enforce_document_version_immutable above (old.status is 'draft'
 -- at that point, so the freeze transition itself is allowed).
-create function public.freeze_document_version_on_link()
+create function careerops.freeze_document_version_on_link()
 returns trigger
 language plpgsql
 as $$
 begin
-  update public.document_versions
+  update careerops.document_versions
   set status = 'frozen', frozen_at = now()
   where id = new.document_version_id
     and status <> 'frozen';
@@ -44,5 +44,5 @@ end;
 $$;
 
 create trigger freeze_document_version_on_link
-  before insert on public.opportunity_documents
-  for each row execute function public.freeze_document_version_on_link();
+  before insert on careerops.opportunity_documents
+  for each row execute function careerops.freeze_document_version_on_link();

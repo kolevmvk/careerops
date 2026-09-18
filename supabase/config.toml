@@ -10,9 +10,17 @@ enabled = true
 port = 54321
 # Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
 # endpoints. `public` and `graphql_public` schemas are included by default.
-schemas = ["public", "graphql_public"]
+#
+# CareerOps owns nothing in `public` (see 20260918033550_shared_conventions.sql):
+# the target Supabase project is shared with other, unrelated projects, and
+# `public` is common ground none of them should assume they own. This only
+# takes effect locally (`supabase start`) -- it is not pushed to the shared
+# hosted project by `supabase db push`. On that project, "careerops" must be
+# added to Project Settings -> API -> Exposed schemas by hand, additively,
+# without touching whatever other projects already have exposed there.
+schemas = ["careerops", "graphql_public"]
 # Extra schemas to add to the search_path of every request.
-extra_search_path = ["public", "extensions"]
+extra_search_path = ["careerops", "public", "extensions"]
 # The maximum number of rows returns from a view, table, or stored procedure. Limits payload size
 # for accidental or malicious requests.
 max_rows = 1000
