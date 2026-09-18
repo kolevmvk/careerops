@@ -2,7 +2,7 @@
 
 Status: draft for v0.1 · Supersedes section 5 and 19 of Specification v1.0 · Companion documents: [SPECIFICATION.md](SPECIFICATION.md), [SCORING.md](SCORING.md)
 
-The domain is designed before the UI. This document is the contract that the database schema, the scoring package, the web cockpit and the mobile companion all depend on.
+The domain is designed before the UI. This document is the contract that the database schema, the scoring package and the client (the Ideal Planner integration, ADR-0014) all depend on.
 
 ---
 

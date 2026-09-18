@@ -138,6 +138,8 @@ Concrete target roles, weights, compensation floors and organization lists are *
 
 ## 5. Architecture
 
+**Partly superseded by ADR-0014** (2026-09-18): `W` below is now the Ideal Planner Flutter app (a separate repo), not a Next.js app built here. Whether the `API` layer (scoring, extraction, document assembly) still gets built as Next.js/Vercel, or something else, is not decided — this diagram and §5.1's tech baseline are left as-is until that's resolved, rather than guessed at here.
+
 ```mermaid
 flowchart LR
     subgraph Clients
@@ -360,7 +362,9 @@ The **public demo instance** runs on a separate Supabase project with the demo s
 
 ---
 
-## 11. Web cockpit
+## 11. Client
+
+Per ADR-0014, this is built as new screens inside the existing Ideal Planner Flutter app (`kolevmvk/Ideal-Planer`, a separate repository), talking directly to this project's Supabase project through `supabase_flutter`, not as a Next.js web app in this repo. The screens below are the functional scope to cover, independent of which client renders them; `/route` names describe the destination, not necessarily a URL.
 
 | Route | Function |
 |---|---|
@@ -381,27 +385,26 @@ Dashboard order: readiness → gaps → focus actions → opportunities → evid
 
 ---
 
-## 12. Android companion (v0.2)
+## 12. Daily quick-capture (v0.2)
 
-Deliberately small, three tabs:
+Per ADR-0014 there is one client (§11), not a separate web app plus companion app, so this is no longer a second Flutter build -- it is a lighter-weight surface added later inside the same CareerOps section of Ideal Planner: a share intent and "+" for job/evidence/organization/task capture, and a condensed daily view (focus tasks, follow-ups due, readiness headline). Deliberately small scope, described here for when it's built, not because it ships as its own app:
 
-| Tab | Purpose |
+| Surface | Purpose |
 |---|---|
 | **Today** | Focus tasks, opportunity follow-ups due, readiness headline |
 | **Capture** | Share intent and "+" for job, evidence note, organization, task; drafts queued locally when offline |
 | **Pipeline** | Opportunities and jobs with match summary and stage changes |
 
-Notifications cover the selected task, follow-ups due, interviews and deadlines. No motivational notifications. Full editing stays on the web.
+Notifications cover the selected task, follow-ups due, interviews and deadlines. No motivational notifications. Full editing stays in the main CareerOps screens (§11).
 
 ---
 
 ## 13. Repository structure
 
+Per ADR-0014 the client is not built in this repo -- it lives in `kolevmvk/Ideal-Planer` as `apps/mobile/ideal_planner/lib/features/career/`. This repo stays backend-only: schema, domain logic, infrastructure and CI.
+
 ```
 careerops/
-├── apps/
-│   ├── web/                    Next.js cockpit, API routes, PWA
-│   └── mobile/                 Flutter companion (v0.2)
 ├── packages/
 │   ├── scoring/                pure TS, SCORING_VERSION, golden tests
 │   ├── extraction/             alias dictionary, requirement parser, fixtures
@@ -414,7 +417,7 @@ careerops/
 │   ├── tests/                  pgTAP RLS and invariant tests
 │   └── seed/demo.sql           fictional persona only
 ├── infra/
-│   └── terraform/              vercel, supabase, aws (backup bucket, OIDC role)
+│   └── terraform/              supabase, aws (backup bucket, OIDC role)
 ├── docs/
 │   ├── SPECIFICATION.md  DOMAIN.md  SCORING.md
 │   ├── ENVIRONMENTS.md  OPERATIONS.md  THREAT_MODEL.md (phase 6)
@@ -424,7 +427,7 @@ careerops/
 └── private/                    git-ignored: real seed, source documents, research
 ```
 
-pnpm workspaces and Turborepo for the TypeScript side; Flutter is managed with its own toolchain inside the same repository.
+pnpm workspaces and Turborepo for the TypeScript side. Where the scoring/extraction/documents packages get served from now that there is no `apps/web` in this repo (a slim API-only deployment? Supabase Edge Functions? Postgres functions called directly?) is not decided by ADR-0014 and needs its own ADR before phase 3 needs it for real.
 
 ---
 
