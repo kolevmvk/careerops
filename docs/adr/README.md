@@ -19,3 +19,4 @@ Decisions that are expensive to change later. Format: context, decision, consequ
 | [0013](0013-branching-model-release-process-and-environments.md) | Branching model, release process and environments | Accepted |
 | [0014](0014-careerops-ships-inside-the-existing-ideal-planner-app.md) | CareerOps ships inside the existing Ideal Planner app, not a new client | Accepted |
 | [0015](0015-careerops-schema-not-public.md) | CareerOps owns a `careerops` schema, not `public` | Accepted |
+| [0016](0016-scoring-extraction-documents-on-supabase-edge-functions.md) | Scoring, extraction and document assembly run as Supabase Edge Functions | Accepted |
