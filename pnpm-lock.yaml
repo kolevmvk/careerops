@@ -42,6 +42,15 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(@types/node@24.13.5)(vite@8.3.0(@types/node@24.13.5)(jiti@2.6.1))
 
+  packages/extraction:
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.5
+        version: 24.13.5
+      vitest:
+        specifier: 5.0.1
+        version: 5.0.1(@types/node@24.13.5)(vite@8.3.0(@types/node@24.13.5)(jiti@2.6.1))
+
   packages/scoring:
     devDependencies:
       '@types/node':

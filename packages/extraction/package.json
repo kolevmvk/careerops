@@ -1,0 +1,19 @@
+{
+  "name": "@careerops/extraction",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Deterministic job import, alias-dictionary requirement extraction and review queue (see docs/SPECIFICATION.md §4.1, §7)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.5",
+    "vitest": "5.0.1"
+  }
+}
