@@ -21,3 +21,8 @@ default gen_random_uuid()`, `user_id uuid not null references auth.users default
 - **Forward references to tables that don't exist yet** (e.g. `employment_highlights.evidence_id`
   before `evidence` is created) are added as a plain column now and given their foreign key with
   an `alter table ... add constraint ...` migration once the referenced table exists.
+
+`supabase db reset` loads `supabase/seed/demo.sql` after migrations, in the same database that
+`supabase test db` then runs pgTAP against. The demo persona's user id (`99999999-...`) is
+reserved for that reason: pgTAP fixtures use `11111111-...` / `22222222-...` and must not collide
+with it (see `supabase/seed/demo.sql` and `supabase/tests/`).

@@ -63,9 +63,8 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-# Disabled until the fictional demo persona seed lands (see docs/SPECIFICATION.md §13,
-# supabase/seed/demo.sql -- issue: fictional demo persona seed).
-enabled = false
+# Loads the fictional demo persona (see docs/SPECIFICATION.md §13, ADR-0012).
+enabled = true
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 sql_paths = ["./seed/demo.sql"]
