@@ -41,14 +41,15 @@ Progress is tracked in [milestones](https://github.com/kolevmvk/careerops/milest
 
 ```mermaid
 flowchart LR
-    W[Next.js cockpit] --> API[Server routes<br/>scoring · extraction · documents]
-    W --> DB[(Supabase Postgres<br/>RLS · triggers · pg_cron)]
-    M[Flutter companion] --> DB
+    C[Ideal Planner<br/>Flutter, separate repo] --> DB[(Supabase Postgres<br/>RLS · triggers · pg_cron)]
+    C --> API[Server routes<br/>scoring · extraction · documents]
     API --> DB
     DB -- webhooks --> API
     AIW[AI worker<br/>on private network] -- pulls queue --> DB
     GH[GitHub Actions] -- migrations · deploy · backups --> DB
 ```
+
+Per ADR-0014, the client is new screens inside the existing Ideal Planner Flutter app (`kolevmvk/Ideal-Planer`, a separate repository) rather than a web or mobile app built here. Where `API` (scoring, extraction, document assembly) gets hosted without a Next.js app in this repo is still open.
 
 Key decisions are recorded as [Architecture Decision Records](docs/adr/README.md).
 
@@ -75,13 +76,14 @@ Key decisions are recorded as [Architecture Decision Records](docs/adr/README.md
 ## Repository layout
 
 ```
-apps/        web cockpit, mobile companion        (from phase 2)
 packages/    scoring, extraction, documents, ai   (pure TypeScript)
 services/    ai-worker                            (phase 8)
 supabase/    migrations, pgTAP tests, demo seed   (phase 1)
 infra/       Terraform                            (phase 6)
 docs/        specification, domain, scoring, ADRs
 ```
+
+No `apps/` directory: per ADR-0014, the client is `kolevmvk/Ideal-Planer` (a separate repository), not built here.
 
 ## Getting started
 
