@@ -32,7 +32,7 @@ Local hooks (lefthook, installed by `pnpm install`) format and lint staged files
 
 ## Definition of done for a pull request
 
-- [ ] Required checks pass: `ci`, `actionlint`, `gitleaks`, `codeql`, `dependency-review`, `pr-title`, `branch-policy`
+- [ ] Required checks pass: `ci`, `db`, `actionlint`, `gitleaks`, `codeql`, `dependency-review`, `pr-title`, `branch-policy`
 - [ ] Behavior changes have tests; scoring changes update golden fixtures and `SCORING_VERSION` when a formula changes
 - [ ] Database changes ship as migrations with RLS policies and pgTAP tests
 - [ ] Decisions that are expensive to reverse have an ADR
