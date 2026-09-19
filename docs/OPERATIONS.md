@@ -19,7 +19,7 @@ Runbooks for operating CareerOps. Sections marked *planned* are completed in the
 
 ## Rollback (*planned, phase 2*)
 
-- **Web:** promote the previous Vercel deployment.
+- **Edge Functions:** redeploy from the previous `main` commit (`supabase functions deploy`); there is no separate web deployment to roll back (ADR-0014, ADR-0016).
 - **Database:** migrations are forward-only. Roll back with a new corrective migration; restore from backup only for data loss.
 
 ## Backup and restore (*planned, phase 6*)

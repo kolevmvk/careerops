@@ -138,22 +138,19 @@ Concrete target roles, weights, compensation floors and organization lists are *
 
 ## 5. Architecture
 
-**Partly superseded by ADR-0014** (2026-09-18): `W` below is now the Ideal Planner Flutter app (a separate repo), not a Next.js app built here. Whether the `API` layer (scoring, extraction, document assembly) still gets built as Next.js/Vercel, or something else, is not decided — this diagram and §5.1's tech baseline are left as-is until that's resolved, rather than guessed at here.
+**Superseded by ADR-0014 and ADR-0016** (2026-09-18/19): the client is the Ideal Planner Flutter app (`M` below, a separate repo, ADR-0014) — no Next.js web cockpit is built here. `packages/scoring`, `packages/extraction` and (once built) `packages/documents` run as Supabase Edge Functions (`FN` below, ADR-0016), not Vercel server routes. A public web cockpit remains possible later (phase 9's public demo) without conflicting with either decision.
 
 ```mermaid
 flowchart LR
-    subgraph Clients
-        W[Next.js web cockpit<br/>+ PWA share target]
-        M[Flutter Android companion<br/>v0.2]
+    subgraph Client
+        M[Ideal Planner<br/>Flutter, separate repo]
     end
     subgraph Supabase
         DB[(Postgres<br/>RLS · triggers · pg_cron)]
         AUTH[Auth]
         ST[Storage<br/>private / public buckets]
         WH[Database webhooks]
-    end
-    subgraph Vercel
-        API[Server routes<br/>scoring · extraction · documents]
+        FN[Edge Functions<br/>scoring · extraction · documents]
     end
     subgraph Home server on tailnet
         AIW[AI worker container<br/>v0.2]
@@ -162,12 +159,10 @@ flowchart LR
     CP[Cloud AI provider<br/>optional, v0.2]
     BK[(Encrypted backups<br/>S3)]
 
-    W --> API
-    W --> DB
     M --> DB
-    M --> API
-    WH --> API
-    API --> DB
+    M --> FN
+    WH --> FN
+    FN --> DB
     AIW -- pulls pending ai_analyses --> DB
     AIW --> OL
     AIW -.-> CP
@@ -179,13 +174,12 @@ flowchart LR
 
 | Layer | Technology | Note |
 |---|---|---|
-| Web | Next.js + TypeScript, Tailwind, shadcn/ui | Cockpit and server routes |
-| Backend | Supabase (Postgres, Auth, Storage, RLS, webhooks, `pg_cron`) | EU region |
-| Domain logic | `packages/scoring`, `packages/extraction`, `packages/documents` (TypeScript, pure) | Single implementation of business rules |
-| Mobile | Flutter (v0.2) | Reads snapshots; mutations that need recomputation go through API routes |
+| Backend | Supabase (Postgres, Auth, Storage, RLS, webhooks, `pg_cron`, Edge Functions) | EU region |
+| Domain logic | `packages/scoring`, `packages/extraction`, `packages/documents` (TypeScript, pure, dependency-free where practical) | Single implementation of business rules; invoked from Edge Functions, never ported to Dart |
+| Client | Flutter, `kolevmvk/Ideal-Planer` (separate repo, ADR-0014) | Talks directly to Supabase (`supabase_flutter`); on-demand calls and recompute go through Edge Functions |
 | AI | Provider interface; local worker with Ollama over Tailscale; optional cloud provider (v0.2) | Never a hard dependency |
-| Hosting | Vercel + Supabase | Low operational burden |
-| Infrastructure as code | Terraform (Vercel, Supabase and AWS providers) | Environments, backup bucket, IAM |
+| Hosting | Supabase only | No Vercel account or Terraform provider for v0.1 (ADR-0016) |
+| Infrastructure as code | Terraform (Supabase and AWS providers) | Environments, backup bucket, IAM |
 | CI/CD | GitHub Actions with OIDC to AWS | No long-lived cloud keys |
 
 ### 5.2 Where rules live
@@ -194,10 +188,10 @@ flowchart LR
 |---|---|
 | Integrity, ownership, visibility ceiling, freeze rules, append-only logs | Postgres constraints, triggers, RLS |
 | Scoring, extraction, document assembly | TypeScript packages, unit-tested, versioned |
-| Orchestration (recompute on change, nightly jobs, follow-up reminders) | Database webhooks, `pg_cron`, API routes |
-| Presentation | Clients only |
+| Orchestration (recompute on change, nightly jobs, follow-up reminders) | Database webhooks, `pg_cron`, Edge Functions |
+| Presentation | Client only |
 
-**Contracts between web and mobile.** The database schema is the contract. TypeScript types come from `supabase gen types`; Dart models are generated from the PostgREST OpenAPI description. Business logic is never ported to Dart. Mobile reads stored results.
+**Contracts with the client.** The database schema is the contract. Dart models are generated from the PostgREST OpenAPI description. Business logic is never ported to Dart — the client reads stored snapshots and calls Edge Functions for anything that needs recomputation.
 
 ---
 
@@ -307,7 +301,7 @@ All outputs are validated against JSON schemas and the skill catalog before they
 
 ### 9.2 Local worker (pull model)
 
-Vercel and Supabase functions cannot reach a Tailscale network. The server writes `ai_analyses` rows with `status = pending` and ids-only `input_refs`. A container on the home server:
+Supabase Edge Functions cannot reach a Tailscale network. The server writes `ai_analyses` rows with `status = pending` and ids-only `input_refs`. A container on the home server:
 
 1. authenticates as a dedicated database role granted only `ai_context_*` views and `ai_analyses`
 2. claims a job
@@ -437,7 +431,7 @@ CareerOps is itself evidence for the target roles. Each engineering practice bel
 
 | Practice in the repository | Evidence for |
 |---|---|
-| Terraform for Vercel, Supabase and AWS; remote state | Infrastructure as Code |
+| Terraform for Supabase and AWS; remote state | Infrastructure as Code |
 | GitHub Actions: lint, typecheck, unit, pgTAP, migration replay, gitleaks, deploy | CI/CD |
 | OIDC from GitHub to AWS with a least-privilege role | Cloud IAM, security |
 | RLS with tests, visibility ceiling triggers, threat model | Application and data security |
