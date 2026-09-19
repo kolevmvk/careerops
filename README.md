@@ -42,14 +42,14 @@ Progress is tracked in [milestones](https://github.com/kolevmvk/careerops/milest
 ```mermaid
 flowchart LR
     C[Ideal Planner<br/>Flutter, separate repo] --> DB[(Supabase Postgres<br/>RLS · triggers · pg_cron)]
-    C --> API[Server routes<br/>scoring · extraction · documents]
-    API --> DB
-    DB -- webhooks --> API
+    C --> FN[Edge Functions<br/>scoring · extraction · documents]
+    FN --> DB
+    DB -- webhooks --> FN
     AIW[AI worker<br/>on private network] -- pulls queue --> DB
     GH[GitHub Actions] -- migrations · deploy · backups --> DB
 ```
 
-Per ADR-0014, the client is new screens inside the existing Ideal Planner Flutter app (`kolevmvk/Ideal-Planer`, a separate repository) rather than a web or mobile app built here. Where `API` (scoring, extraction, document assembly) gets hosted without a Next.js app in this repo is still open.
+Per ADR-0014, the client is new screens inside the existing Ideal Planner Flutter app (`kolevmvk/Ideal-Planer`, a separate repository) rather than a web or mobile app built here. Per ADR-0016, `packages/scoring`/`extraction`/`documents` run as Supabase Edge Functions — no Vercel account or Next.js app for v0.1.
 
 Key decisions are recorded as [Architecture Decision Records](docs/adr/README.md).
 

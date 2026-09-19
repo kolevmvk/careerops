@@ -17,7 +17,7 @@
 
 - Real data exists only in production and in encrypted backups. Staging is safe to show anyone.
 - Migrations flow in one direction: local → staging → production. Nobody edits a schema in the dashboard; CI checks for drift.
-- Secrets live in GitHub environment secrets (`staging`, `production`) and Vercel environment variables. `.env.example` lists names only.
+- Secrets live in GitHub environment secrets (`staging`, `production`) and Supabase Edge Function secrets (`supabase secrets set`). `.env.example` lists names only.
 - The service-role key exists only in server-side environments and CI.
 - Free tiers are used initially. Free Supabase projects pause after inactivity and have no point-in-time recovery, so the nightly production backup job also acts as a keep-alive and health check.
 
