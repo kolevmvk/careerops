@@ -33,7 +33,7 @@ verified evidence → skill model → real market demand → explainable gaps
 | 4 · Opportunities & documents | Organizations, pipeline, terms gate, CV and pitch generation | planned  |
 | 5 · Execution                 | Roadmap, tasks, learning                                     | planned  |
 | 6 · Platform                  | Terraform, backups and restore drills, observability         | planned  |
-| 7–9                           | Android companion, AI worker, public demo                    | planned  |
+| 7–9                           | Companion surfaces in Ideal Planner, AI worker, public demo  | planned  |
 
 Progress is tracked in [milestones](https://github.com/kolevmvk/careerops/milestones).
 
