@@ -1,11 +1,13 @@
 // supabase/functions/import-job/index.ts
 //
-// On-demand job import (paste) — the I/O layer ADR-0016 assigned to Edge
-// Functions: dedupe by content hash, run packages/extraction against the
-// caller's alias dictionary, persist job_requirements, then run
-// packages/scoring's job match for every requirement it could map to a
-// skill. Business logic stays in the two pure packages; this file is only
-// the glue (auth, DB reads/writes).
+// On-demand job import (paste or URL) — the I/O layer ADR-0016 assigned to
+// Edge Functions: for url_fetch, a single server-side fetch + readability
+// extraction (packages/extraction), asking for a paste instead on failure
+// per docs/SPECIFICATION.md §7; either path then dedupes by content hash,
+// runs packages/extraction against the caller's alias dictionary, persists
+// job_requirements, then runs packages/scoring's job match for every
+// requirement it could map to a skill. Business logic stays in the two
+// pure packages; this file is only the glue (auth, fetch, DB reads/writes).
 //
 // Runs with the caller's own JWT (the incoming Authorization header is
 // forwarded to the Supabase client below), never service_role — RLS is the
@@ -15,6 +17,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import {
   buildAliasIndex,
   contentHash,
+  extractReadableText,
   extractRequirements,
   type AliasEntry,
 } from "../../../packages/extraction/src/index.ts";
@@ -35,7 +38,8 @@ interface ImportJobRequest {
   remotePolicy?: "remote" | "hybrid" | "onsite" | "unknown";
   sourceKind: "paste" | "url_fetch";
   sourceUrl?: string;
-  rawText: string;
+  /** Required for `sourceKind: "paste"`; ignored for `"url_fetch"` (fetched server-side instead). */
+  rawText?: string;
 }
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -43,6 +47,60 @@ function jsonResponse(body: unknown, status = 200): Response {
     status,
     headers: { "content-type": "application/json" },
   });
+}
+
+const FETCH_TIMEOUT_MS = 15000;
+const USER_AGENT = "CareerOps/1.0 (+https://github.com/kolevmvk/careerops; private job-ad import)";
+const PRIVATE_HOSTNAME_PATTERNS = [
+  /^127\./,
+  /^10\./,
+  /^192\.168\./,
+  /^169\.254\./, // includes cloud metadata endpoints (169.254.169.254)
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^0\.0\.0\.0$/,
+  /^::1$/,
+];
+
+/**
+ * Rejects obviously-internal targets before this server-side fetch touches
+ * them (classic SSRF vector: an authenticated user supplies an arbitrary
+ * URL). Hostname-string based, not DNS-rebinding-proof — proportionate for
+ * a personal single-user tool, not a defense against a determined attacker
+ * with their own DNS.
+ */
+function isFetchableUrl(url: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
+  const hostname = parsed.hostname.toLowerCase();
+  if (hostname === "localhost" || hostname.endsWith(".localhost")) return false;
+  return !PRIVATE_HOSTNAME_PATTERNS.some((pattern) => pattern.test(hostname));
+}
+
+/**
+ * Single server-side fetch + readability extraction (docs/SPECIFICATION.md
+ * §7). No crawling, no retries against a block or non-200 response -- a
+ * dynamic page, a login wall and a block all fail the same way here, and
+ * the caller asks the user to paste instead rather than guessing.
+ */
+async function fetchReadableJobAd(url: string): Promise<string | null> {
+  if (!isFetchableUrl(url)) return null;
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { "User-Agent": USER_AGENT, Accept: "text/html" },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+  } catch {
+    return null;
+  }
+  if (!response.ok) return null;
+  const html = await response.text();
+  return extractReadableText(html)?.text ?? null;
 }
 
 /** One active `scoring_configs` row per user (docs/SCORING.md §1). Bootstraps the package defaults if none exists yet. */
@@ -199,21 +257,39 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
   }
 
+  if (!body.company || !body.title) {
+    return jsonResponse({ error: "company and title are required" }, 400);
+  }
+
+  let rawText: string;
   if (body.sourceKind === "url_fetch") {
-    // docs/SPECIFICATION.md §7: server-side readability fetch, falling back
-    // to asking for a paste on failure — not implemented yet. Fail closed
-    // instead of silently treating the URL as raw text.
-    return jsonResponse(
-      { error: "url_fetch not implemented yet — paste the ad text instead (sourceKind: 'paste')" },
-      501,
-    );
+    if (!body.sourceUrl) {
+      return jsonResponse({ error: "sourceUrl is required for sourceKind: 'url_fetch'" }, 400);
+    }
+    const fetched = await fetchReadableJobAd(body.sourceUrl);
+    if (!fetched) {
+      // docs/SPECIFICATION.md §7: on failure, ask for a paste -- don't
+      // guess with a near-empty or missing extraction.
+      return jsonResponse(
+        {
+          error:
+            "Could not extract a readable job ad from that page. Paste the ad text instead (sourceKind: 'paste').",
+          needsPaste: true,
+        },
+        422,
+      );
+    }
+    rawText = fetched;
+  } else if (body.sourceKind === "paste") {
+    if (!body.rawText) {
+      return jsonResponse({ error: "rawText is required for sourceKind: 'paste'" }, 400);
+    }
+    rawText = body.rawText;
+  } else {
+    return jsonResponse({ error: "sourceKind must be 'paste' or 'url_fetch'" }, 400);
   }
 
-  if (!body.rawText || !body.company || !body.title) {
-    return jsonResponse({ error: "rawText, company and title are required" }, 400);
-  }
-
-  const hash = await contentHash(body.rawText);
+  const hash = await contentHash(rawText);
 
   const { data: existingJob } = await supabase
     .from("jobs")
@@ -234,7 +310,7 @@ Deno.serve(async (req) => {
         remote_policy: body.remotePolicy ?? "unknown",
         source_kind: body.sourceKind,
         source_url: body.sourceUrl ?? null,
-        raw_text: body.rawText,
+        raw_text: rawText,
         content_hash: hash,
         status: "new",
       })
@@ -254,7 +330,7 @@ Deno.serve(async (req) => {
   }
 
   const dictionary = await loadAliasDictionary(supabase);
-  const extraction = extractRequirements(body.rawText, dictionary);
+  const extraction = extractRequirements(rawText, dictionary);
 
   const requirementRows = [
     ...extraction.skillRequirements.map((r) => ({

@@ -1,4 +1,5 @@
 export * from "./types.ts";
+export * from "./readability.ts";
 export * from "./normalize.ts";
 export * from "./contentHash.ts";
 export * from "./dictionary.ts";
