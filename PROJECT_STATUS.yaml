@@ -1,0 +1,72 @@
+# Declared status; not a verified release. Source: repository README/docs and Git HEAD.
+# 0/0 module progress means unquantified; empty risk/debt lists do not prove absence.
+# Blocker since dates are the source-document commit dates, not inferred incident dates.
+# Stage: provisional prototype classification; no formal lifecycle stage is declared.
+schema_version: 1
+project:
+  id: careerops
+  name: CareerOps
+  repo: kolevmvk/careerops
+  kind: api
+  stage: prototype
+updated:
+  at: "2026-09-24T10:50:50Z"
+  by: codex
+  at_commit: "84f5a5ce0fe718b4319765b3eedb63e13a956c0b"
+summary:
+  Career intelligence repository with database migrations, scoring and job-extraction packages.
+  Current HEAD implements URL-fetch job import in an Edge Function. README records Ideal Planner as the
+  separate client; the scoring, extraction and function issues remain open.
+modules:
+  - id: M1
+    name: Scoring and extraction packages
+    path: packages
+    status: in_progress
+    progress:
+      done: 0
+      total: 0
+      basis:
+        "Not quantified: no acceptance-item count has been established for this snapshot; 0/0 is unknown
+        progress, not zero-percent completion."
+    depends_on: []
+    docs:
+      - README.md
+  - id: M2
+    name: Database and Edge Functions
+    path: supabase
+    status: in_progress
+    progress:
+      done: 0
+      total: 0
+      basis:
+        "Not quantified: no acceptance-item count has been established for this snapshot; 0/0 is unknown
+        progress, not zero-percent completion."
+    depends_on: []
+    docs:
+      - README.md
+risks: []
+blockers: []
+technical_debt: []
+pending_verification:
+  - id: V1
+    claim: The documented repository checks and primary workflows succeed on this checkout.
+    module: null
+    how: pnpm check
+    status: not_run
+    evidence: null
+next_actions: []
+release:
+  target_version: null
+  checklist:
+    - id: RC1
+      title: "Release acceptance: build, integrations and user/device flows checked for the intended release."
+      status: not_run
+      evidence: null
+agents:
+  last_session:
+    agent: codex
+    at: "2026-09-24T10:50:50Z"
+    summary:
+      Created a repository-grounded Control Center status snapshot; application/release checks
+      not run.
+    commits: 1

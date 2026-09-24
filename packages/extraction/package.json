@@ -12,6 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
+  "dependencies": {
+    "cheerio": "1.2.0"
+  },
   "devDependencies": {
     "@types/node": "24.13.5",
     "vitest": "5.0.1"
