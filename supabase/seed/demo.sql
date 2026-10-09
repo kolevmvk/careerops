@@ -20,9 +20,16 @@ begin;
 -- Fixed id so every other insert below can reference it as a literal.
 -- Password is for local/staging convenience only; the public demo project
 -- never contains real data (ADR-0007).
+-- The four token columns are set to '' rather than left NULL on purpose:
+-- GoTrue scans them into Go strings, so a NULL makes every sign-in for this
+-- user fail with "Database error querying schema" (500). The pgTAP suite
+-- never catches that -- it sets request.jwt.claims directly and never goes
+-- through the auth server -- so without these, the persona is usable by the
+-- tests but cannot actually log in locally or on staging.
 insert into auth.users (
   id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
-  raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+  raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+  confirmation_token, recovery_token, email_change, email_change_token_new
 ) values (
   '99999999-9999-9999-9999-999999999999',
   '00000000-0000-0000-0000-000000000000',
@@ -32,7 +39,8 @@ insert into auth.users (
   now(),
   '{"provider":"email","providers":["email"]}',
   '{"full_name":"Elena Voss"}',
-  now(), now()
+  now(), now(),
+  '', '', '', ''
 );
 
 insert into auth.identities (
