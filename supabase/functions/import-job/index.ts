@@ -13,7 +13,7 @@
 // forwarded to the Supabase client below), never service_role — RLS is the
 // only access control, per #32's acceptance criteria.
 
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import {
   buildAliasIndex,
   contentHash,
@@ -30,6 +30,22 @@ import {
   type EvidenceLink,
   type SkillRequirementInput,
 } from "../../../packages/scoring/src/index.ts";
+
+/**
+ * Every table this function touches lives in `careerops`, never `public`
+ * (ADR-0015): the target Supabase project is shared with unrelated projects
+ * and CareerOps owns nothing in `public`. Without `db.schema`, PostgREST
+ * defaults to `public` and every query fails with PGRST106 "Invalid schema".
+ */
+function createCareerOpsClient(url: string, anonKey: string, authHeader: string) {
+  return createClient(url, anonKey, {
+    db: { schema: "careerops" },
+    global: { headers: { Authorization: authHeader } },
+  });
+}
+
+/** The schema-scoped client above; `SupabaseClient` on its own defaults to `public`. */
+type CareerOpsClient = ReturnType<typeof createCareerOpsClient>;
 
 interface ImportJobRequest {
   company: string;
@@ -104,7 +120,7 @@ async function fetchReadableJobAd(url: string): Promise<string | null> {
 }
 
 /** One active `scoring_configs` row per user (docs/SCORING.md §1). Bootstraps the package defaults if none exists yet. */
-async function getActiveScoringConfigId(supabase: SupabaseClient): Promise<string> {
+async function getActiveScoringConfigId(supabase: CareerOpsClient): Promise<string> {
   const { data: existing, error: fetchError } = await supabase
     .from("scoring_configs")
     .select("id")
@@ -127,7 +143,7 @@ async function getActiveScoringConfigId(supabase: SupabaseClient): Promise<strin
   return created.id as string;
 }
 
-async function loadAliasDictionary(supabase: SupabaseClient) {
+async function loadAliasDictionary(supabase: CareerOpsClient) {
   const { data, error } = await supabase.from("skill_aliases").select("skill_id, normalized");
   if (error) throw error;
   const entries: AliasEntry[] = (data ?? []).map(
@@ -164,7 +180,7 @@ interface EvidenceSkillRow {
  * `confirmed_at`/`verified_at` both required.
  */
 async function scoreSkillRequirement(
-  supabase: SupabaseClient,
+  supabase: CareerOpsClient,
   skillId: string,
 ): Promise<{ effectiveLevel: number; confidence: number }> {
   const { data: userSkill } = await supabase
@@ -238,9 +254,7 @@ Deno.serve(async (req) => {
     );
   }
   const authHeader = req.headers.get("Authorization") ?? "";
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
+  const supabase = createCareerOpsClient(supabaseUrl, supabaseAnonKey, authHeader);
 
   const {
     data: { user },
