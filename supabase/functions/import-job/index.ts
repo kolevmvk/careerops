@@ -15,11 +15,12 @@
 
 import { createClient } from "@supabase/supabase-js";
 import {
-  buildAliasIndex,
+  buildSkillDictionary,
   contentHash,
   extractReadableText,
   extractRequirements,
   type AliasEntry,
+  type SkillEntry,
 } from "../../../packages/extraction/src/index.ts";
 import {
   DEFAULT_SCORING_CONFIG,
@@ -143,16 +144,38 @@ async function getActiveScoringConfigId(supabase: CareerOpsClient): Promise<stri
   return created.id as string;
 }
 
-async function loadAliasDictionary(supabase: CareerOpsClient) {
-  const { data, error } = await supabase.from("skill_aliases").select("skill_id, normalized");
-  if (error) throw error;
-  const entries: AliasEntry[] = (data ?? []).map(
+/**
+ * The caller's matching dictionary: the alias table *and* the skill catalog
+ * itself. Aliases exist to cover wording the catalog does not already use, so
+ * loading them alone leaves every skill without a hand-written alias
+ * unmatchable even when an ad names it exactly — on a DevOps ad naming eight
+ * catalogued skills, that was three of thirty requirements mapped.
+ *
+ * Both reads go through RLS, so the dictionary is scoped to the caller.
+ */
+async function loadSkillDictionary(supabase: CareerOpsClient) {
+  const [aliasResult, skillResult] = await Promise.all([
+    supabase.from("skill_aliases").select("skill_id, normalized"),
+    supabase.from("skills").select("id, name, slug"),
+  ]);
+  if (aliasResult.error) throw aliasResult.error;
+  if (skillResult.error) throw skillResult.error;
+
+  const aliases: AliasEntry[] = (aliasResult.data ?? []).map(
     (row: { skill_id: string; normalized: string }) => ({
       skillId: row.skill_id,
       normalized: row.normalized,
     }),
   );
-  return buildAliasIndex(entries);
+  const skills: SkillEntry[] = (skillResult.data ?? []).map(
+    (row: { id: string; name: string; slug: string }) => ({
+      skillId: row.id,
+      name: row.name,
+      slug: row.slug,
+    }),
+  );
+
+  return buildSkillDictionary({ aliases, skills });
 }
 
 /** Months since an ISO date, or 0 for ongoing (`occurred_to IS NULL`) per docs/SCORING.md §2.3. */
@@ -343,7 +366,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ jobId, status: "already_extracted" });
   }
 
-  const dictionary = await loadAliasDictionary(supabase);
+  const dictionary = await loadSkillDictionary(supabase);
   const extraction = extractRequirements(rawText, dictionary);
 
   const requirementRows = [
