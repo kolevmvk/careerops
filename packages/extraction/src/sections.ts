@@ -13,6 +13,11 @@ const IGNORED_HEADERS =
 
 const BULLET_PREFIX = /^[-*•▪‣◦]\s*/;
 
+/** Drops a leading list marker so stored `raw_text` reads as the requirement, not the bullet. */
+export function stripBulletPrefix(line: string): string {
+  return line.replace(BULLET_PREFIX, "");
+}
+
 export interface ClassifiedLine {
   line: string;
   importance: RequirementImportance;
@@ -49,7 +54,7 @@ export function classifyLines(rawText: string): ClassifiedLine[] {
     }
 
     if (current === "ignored") continue;
-    result.push({ line: trimmed.replace(BULLET_PREFIX, ""), importance: current });
+    result.push({ line: stripBulletPrefix(trimmed), importance: current });
   }
 
   return result;

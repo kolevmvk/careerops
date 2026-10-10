@@ -29,7 +29,21 @@ export interface AliasEntry {
   normalized: string;
 }
 
-/** Lookup index built by {@link buildAliasIndex}: normalized phrase → skill id. */
+/**
+ * One `careerops.skills` row. Its `name` and `slug` are the catalog's own
+ * wording, which an ad is at least as likely to use as a hand-written alias,
+ * so both are indexed alongside the aliases (see {@link buildSkillDictionary}).
+ * Neither column is normalized in the database, unlike `skill_aliases.normalized`.
+ */
+export interface SkillEntry {
+  skillId: string;
+  /** `skills.name`, e.g. "CI/CD", "Identity & Access Management". */
+  name: string;
+  /** `skills.slug`, e.g. "ci-cd", "identity-access-management". */
+  slug: string;
+}
+
+/** Lookup index built by {@link buildSkillDictionary}: normalized phrase → skill id. */
 export type AliasDictionary = ReadonlyMap<string, string>;
 
 export interface ExtractedSkillRequirement {
